@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"><!-- comment -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <style>
+
+            body{
+                background-color:  #c7ceb9;
+            }
+
+        </style>
+    </head>
+    <body >
+        <div class="container">
+
+
+            <table class="table table-striped-columns  table-hover table-striped table-responsive">
+                <thead >
+                    <tr>
+                        <th scope="col">
+                            <a th:href="@{/usuario/addUser/0}">
+                                <button class="btn btn-outline-primary" >
+                                    <i class="bi bi-person-fill-add"></i>
+                                    Usuario
+                                </button>
+                            </a>
+                        </th>
+                    </tr> 
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Imagen</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Contacto</th>
+                        <th scope="col">Direccion</th>
+                        <th scope="col">Roll</th>
+                        <th scope="col">Editar</th>
+                        <th scope="col">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody class="table-dark" >
+                    <tr th:each="usuarioDireccion : ${usuariosDireccion}"  >
+                        <td th:text="${usuarioDireccion.usuario.IdUsuario}" th:attr="data-id=${usuarioDireccion.usuario.IdUsuario}" id="ddlidUsuario"></td>
+                        <td> <image style="width: 100px" th:src="${usuarioDireccion.usuario.Imagen == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'data:image/png;base64,'+ ${usuarioDireccion.usuario.Imagen}"></td>
+                        <td th:text="|${usuarioDireccion.usuario.NombreUsuario} ${usuarioDireccion.usuario.ApellidoPatUsuario} ${usuarioDireccion.usuario.ApellidoMatUsuario}|"></td>
+                        <td th:text="|correo: ${usuarioDireccion.usuario.CorreoUsuario} cel: ${usuarioDireccion.usuario.CelularUsuario} tel: ${usuarioDireccion.usuario.TelefonoUsuario}|"></td>
+                        <td>
+                            <ul>
+                                <!--
+                                Al poner direcciones ya no se necesita ingresar a "usuarioDireccion.Direccion.Calle" como en los casos anteriores
+                                ya que al ingresar directamente a la direccion solo se pone "Direccion.Calle"
+                                
+                                tambien se usa el if de una sola linea para evaluar la calle puesto que si viene vacio todo lo demas sera igual
+                                este if es limitado por lo que sepuede usar en su mayora como un boolean (true or false)
+                                evaluar ? verdad : else
+                                en usuarioDireccion se tiene un arraylist de Direcciones
+                                -->
+                                <li th:each="Direccion : ${usuarioDireccion.Direcciones}"
+                                    th:text=
+                                    "${Direccion.Calle} == null ? 'No tiene direccion' : | ${Direccion.Calle}
+                                    ${Direccion.NumeroInterior} 
+                                    ${Direccion.NumeroExterior}, 
+                                    ${Direccion.Colonia.NombreColonia}  
+                                    ${Direccion.Colonia.CodigoPostal}, 
+                                    ${Direccion.Colonia.Municipio.NombreMunicipio},
+                                    ${Direccion.Colonia.Municipio.Estado.NombreEstado}, 
+                                    ${Direccion.Colonia.Municipio.Estado.Pais.NombrePais}|"
+                                    >
+                                <li th:each="Direccion : ${usuarioDireccion.Direcciones}"
+                                    th:hidden="${Direccion.Calle} == null ? 0 : ${Direccion.IdDireccion}"
+                                    th:value= "${Direccion.Calle} == null ? 0 : ${Direccion.IdDireccion}"
+                                    id="ddlDireccion"
+                                    >
+                                </li>
+                            </ul>
+                        </td>
+
+                        <td th:text="${usuarioDireccion.usuario.Roll.NombreRoll}" ></td>
+                        <td>
+                            <!--boton para editar-->
+                            <a th:href="@{'/usuario/addUser/' + ${usuarioDireccion.usuario.IdUsuario} }">
+                            <button class="btn btn-outline-warning " id="btnEditar">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            </a>
+                        </td>
+                        <td>
+                            <!--boton para eliminar-->
+                            <a th:href="@{'/usuario/addUser/' + ${usuarioDireccion.usuario.IdUsuario}  }">
+                                <!--${usuarioDireccion.Direccion.idDireccion}-->
+                            <button class="btn btn-outline-danger">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+      
+    </body>
+</html>
