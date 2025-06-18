@@ -23,4 +23,8 @@ public interface IUsuarioDAO {
     Result GetById(int idUsuario);
     
     Result UsuarioGetSolo(int idUsuario);
+    
+    Result UsuarioBusqueda(UsuarioDireccion usuarioBusqueda);
+    
+    Result UpdateActivo(int IdUsuario,int ActivoUsuario);
 }

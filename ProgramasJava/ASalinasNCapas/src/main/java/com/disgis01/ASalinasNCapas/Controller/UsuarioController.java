@@ -59,8 +59,20 @@ public class UsuarioController {
 
         if (result.correct) {
             model.addAttribute("usuariosDireccion", result.objects); //se manda la informacion a la vista a traves de una variable
-
+            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
+            model.addAttribute("usuarioDireccion", new UsuarioDireccion());
         }
+        return "IndexUsuario";
+    }
+    
+    @PostMapping("index")
+    public String Index(Model model, @ModelAttribute UsuarioDireccion usuarioBusqueda) {
+
+            model.addAttribute("usuarioBusqueda", usuarioBusqueda); //se manda la informacion a la vista a traves de una variable
+            model.addAttribute("usuariosDireccion", usuarioDAOImplementation.UsuarioBusqueda(usuarioBusqueda).objects); //se manda la informacion a la vista a traves de una variable
+            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
+            model.addAttribute("usuarioDireccion", new UsuarioDireccion());
+        
         return "IndexUsuario";
     }
 
@@ -229,4 +241,9 @@ public class UsuarioController {
         return coloniaDAOImplementation.GetByIdColonias(idMunicipio);
     }
 
+    @PostMapping("Activo")
+    @ResponseBody
+    public Result ActivoUsuario(@RequestParam int IdUsuario, @RequestParam int ActivoUsuario){
+        return usuarioDAOImplementation.UpdateActivo(IdUsuario,ActivoUsuario);
+    }
 }

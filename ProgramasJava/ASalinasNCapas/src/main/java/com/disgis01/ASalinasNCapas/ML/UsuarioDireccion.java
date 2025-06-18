@@ -12,7 +12,7 @@ import java.util.List;
  * @author Alien 1
  */
 public class UsuarioDireccion {
-    @Valid
+//    @Valid
     public Usuario usuario; //acceso a usuario
 //    @Valid
     public Direccion Direccion; //acceso a direccion 

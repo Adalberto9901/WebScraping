@@ -22,11 +22,11 @@ public class Usuario {
     @NotEmpty(message = "Ingresa dato :@")
     private String NombreUsuario;
 
-    @Size(min = 3, max = 20, message = "Nombre entre 3 y 20")
+    @Size(min = 3, max = 35, message = "Nombre entre 3 y 35")
     @NotEmpty(message = "Ingresa dato :@")
     private String ApellidoPatUsuario;
 
-    @Size(min = 3, max = 20, message = "Nombre entre 3 y 20")
+    @Size(min = 3, max = 35, message = "Nombre entre 3 y 35")
     @NotEmpty(message = "Ingresa dato :@")
     private String ApellidoMatUsuario;
 
@@ -64,6 +64,7 @@ public class Usuario {
     private String UserNombreUsuario;
     
     private String Imagen;
+    private int ActivoUsuario;
 
     public Roll Roll; //=> propiedad de navegacion
     //public Direccion Direccion;
@@ -180,5 +181,12 @@ public class Usuario {
         this.Imagen = Imagen;
     }
 
+    public int getActivoUsuario() {
+        return ActivoUsuario;
+    }
+
+    public void setActivoUsuario(int ActivoUsuario) {
+        this.ActivoUsuario = ActivoUsuario;
+    }
     
 }

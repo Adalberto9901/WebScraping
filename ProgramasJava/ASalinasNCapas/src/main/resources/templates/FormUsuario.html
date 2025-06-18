@@ -31,171 +31,175 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
 
             <form class="row g-3" id="formUsuario" method="post" th:object="${usuarioDireccion}" th:action="@{/usuario/addUser}" enctype="multipart/form-data">
-                
-                    <input type="hidden" class="form-control border border-dark rounded-pill" 
-                           th:field="*{Usuario.IdUsuario}" onpaste="return false" id="IdUsuario">
-                    
-                    <input type="hidden" class="form-control border border-dark rounded-pill" 
-                           th:field="*{Direccion.IdDireccion}" onpaste="return false" id="IdDireccion">
+
+                <input type="hidden" class="form-control border border-dark rounded-pill" 
+                       th:field="*{Usuario.IdUsuario}" onpaste="return false" id="IdUsuario">
+
+                <input type="hidden" class="form-control border border-dark rounded-pill" 
+                       th:field="*{Direccion.IdDireccion}" onpaste="return false" id="IdDireccion">
                 <!--<div th:if="*{(usuario.IdUsuario == -1)  }">-->
                 <div th:if="*{ (usuario.IdUsuario == 0 && Direccion.IdDireccion == 0)
                      || (usuario.IdUsuario >0 && Direccion.IdDireccion == -1) }">
-                    
-                    <div class="col-md-4">
-                    
-                    <label for="Imagen" class="form-label "><h6>Imagen</h6></label>
-                    <input type="file" class="form-control border border-dark rounded-pill"
-                            onpaste="return false" name="Imagen" id="Imagen">
-                    <image style="width: 100px" th:src="*{Usuario.Imagen == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' 
-                           : 'data:image/png;base64,'+ *{Usuario.Imagen}">
-                    <!--<span class="text-danger"  th:if="${#fields.hasErrors('Usuario.NombreUsuario')}" th:errors="*{Usuario.NombreUsuario}"></span>-->
-                </div>
-                <div class="col-md-4">
-                    <label for="NombreUsuario" class="form-label "><h6>Nombre</h6></label>
-                    <!--required onblur="SoloLetras(event)"-->
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="Adalberto" 
-                           th:field="*{Usuario.NombreUsuario}" onpaste="return false" id="NombreUsuario">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.NombreUsuario')}" th:errors="*{Usuario.NombreUsuario}"></span>
-                </div>
-                <div class="col-md-4">
-                    <label  class="form-label"><h6>Apellido Paterno</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill"  placeholder="Salinas"
-                           th:field="*{Usuario.ApellidoPatUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.ApellidoPatUsuario')}" th:errors="*{Usuario.ApellidoPatUsuario}"></span>
-                </div>
-                <div class="col-md-4 ">
-                    <label class="form-label"><h6>Apellido Materno</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="Jose"
-                           th:field="*{Usuario.ApellidoMatUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.ApellidoMatUsuario')}" th:errors="*{Usuario.ApellidoMatUsuario}"></span>
-                </div>
-                <div class="col-md-6 ">
-                    <label class="form-label"><h6>Fecha de Nacimiento</h6></label>
-                    <input type="date" class="form-control border border-dark rounded-pill"
-                           th:field="*{Usuario.FechaNacimeintoUsuario}" >
-                </div>
-                <div class="col-md-6 ">
-                    <fieldset class="row mb-3">
-                        <legend class="col-form-label col-sm-2 pt-0"><h6>Sexo</h6></legend>
-                        <div class="col-sm-10" >
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="Masculino" checked 
-                                       th:field="*{Usuario.SexoUsuario}" th:value="Masculino">
-                                <label class="form-check-label" for="gridRadios1">
-                                    Masculino
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="Femenino"
-                                       th:field="*{Usuario.SexoUsuario}" th:value="Femenino">
-                                <label class="form-check-label" for="gridRadios2">
-                                    Femenino
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="col-md-6 ">
-                    <label for="CorreoUsuario" class="form-label"><h6>Email</h6></label>
-                    <input type="email" class="form-control border border-dark rounded-pill" placeholder="example@email.com"
-                           th:field="*{Usuario.CorreoUsuario}" onpaste="return false" id="CorreoUsuario">
 
-                    <span class="text-danger"  th:if="${#fields.hasErrors('usuario.CorreoUsuario')}" th:errors="*{Usuario.CorreoUsuario}"></span>
+                    <div class="col-md-4">
+
+                        <label for="Imagen" class="form-label "><h6>Imagen</h6></label>
+                        <input type="file" class="form-control border border-dark rounded-pill"
+                               onpaste="return false" name="Imagen" id="Imagen">
+                        <image style="width: 100px" th:src="*{Usuario.Imagen == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' 
+                               : 'data:image/png;base64,'+ *{Usuario.Imagen}">
+                        <!--<span class="text-danger"  th:if="${#fields.hasErrors('Usuario.NombreUsuario')}" th:errors="*{Usuario.NombreUsuario}"></span>-->
+                    </div>
+                    <div class="col-md-4">
+                        <label for="NombreUsuario" class="form-label "><h6>Nombre</h6></label>
+                        <!--required onblur="SoloLetras(event)"-->
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="Adalberto" 
+                               th:field="*{Usuario.NombreUsuario}" onpaste="return false" id="NombreUsuario" >
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.NombreUsuario')}" th:errors="*{Usuario.NombreUsuario}"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label  class="form-label"><h6>Apellido Paterno</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill"  placeholder="Salinas"
+                               th:field="*{Usuario.ApellidoPatUsuario}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.ApellidoPatUsuario')}" th:errors="*{Usuario.ApellidoPatUsuario}"></span>
+                    </div>
+                    <div class="col-md-4 ">
+                        <label class="form-label"><h6>Apellido Materno</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="Jose"
+                               th:field="*{Usuario.ApellidoMatUsuario}" onpaste="return false" >
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.ApellidoMatUsuario')}" th:errors="*{Usuario.ApellidoMatUsuario}"></span>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label class="form-label"><h6>Fecha de Nacimiento</h6></label>
+                        <input type="date" class="form-control border border-dark rounded-pill"
+                               th:field="*{Usuario.FechaNacimeintoUsuario}">
+                    </div>
+                    <div class="col-md-6 ">
+                        <fieldset class="row mb-3">
+                            <legend class="col-form-label col-sm-2 pt-0"><h6>Sexo</h6></legend>
+                            <div class="col-sm-10" >
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="Masculino" checked 
+                                           th:field="*{Usuario.SexoUsuario}" th:value="Masculino">
+                                    <label class="form-check-label" for="gridRadios1">
+                                        Masculino
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="Femenino"
+                                           th:field="*{Usuario.SexoUsuario}" th:value="Femenino">
+                                    <label class="form-check-label" for="gridRadios2">
+                                        Femenino
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label for="CorreoUsuario" class="form-label"><h6>Email</h6></label>
+                        <input type="email" class="form-control border border-dark rounded-pill" placeholder="example@email.com"
+                               th:field="*{Usuario.CorreoUsuario}" onpaste="return false" id="CorreoUsuario">
+
+                        <span class="text-danger"  th:if="${#fields.hasErrors('usuario.CorreoUsuario')}" th:errors="*{Usuario.CorreoUsuario}"></span>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label class="form-label"><h6>Nombre de la Cuenta</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="Adal1234"
+                               th:field="*{Usuario.UserNombreUsuario}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.UserNombreUsuario')}" th:errors="*{Usuario.UserNombreUsuario}"></span>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label class="form-label"><h6>Contraseña</h6></label>
+                        <input type="password" class="form-control border border-dark rounded-pill" placeholder="Ibuprofeno@186"
+                               th:field="*{Usuario.PasswordUsuario}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.PasswordUsuario')}" th:errors="*{Usuario.PasswordUsuario}"></span>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label class="form-label"><h6>Celular</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="55-1234-5678"
+                               th:field="*{Usuario.CelularUsuario}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.CelularUsuario')}" th:errors="*{Usuario.CelularUsuario}"></span>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label  class="form-label"><h6>Telefono</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill"  placeholder="(55)1234-5678 "
+                               th:field="*{Usuario.TelefonoUsuario}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.TelefonoUsuario')}" th:errors="*{Usuario.TelefonoUsuario}"></span>
+                    </div>
+                    <div class="col-md-6 ">
+                        <label class="form-label"><h6>CURP</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill"  placeholder="CURP"
+                               th:field="*{Usuario.CURPUsuario}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.CURPUsuario')}" th:errors="*{Usuario.CURPUsuario}"></span>
+                    </div>
+                    <div class="col-md-4 ">
+                        <label for="inputRoll" class="form-label "><h6>Roll</h6></label>
+                        <select id="inputRoll" required  class="form-select border border-dark rounded-pill" th:field="*{Usuario.Roll.IdRoll}">
+                            <option selected value="0" >Elije...</option>
+                            <option th:each="roll : ${rolles}" th:value="${roll.IdRoll}" th:text="${roll.NombreRoll}" ></option>
+                        </select>
+                    </div>
+                    <div class="form-check form-switch " th:if="*{ (usuario.IdUsuario > 0 )}">
+                        <input class="form-check-input" type="checkbox" id="CheckActivo"  th:value="*{Usuario.ActivoUsuario}">
+                        <label class="form-check-label" id="Activo" >Actividad del Usuario</label>
+                    </div>
                 </div>
-                <div class="col-md-6 ">
-                    <label class="form-label"><h6>Nombre de la Cuenta</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="Adal1234"
-                           th:field="*{Usuario.UserNombreUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.UserNombreUsuario')}" th:errors="*{Usuario.UserNombreUsuario}"></span>
-                </div>
-                <div class="col-md-6 ">
-                    <label class="form-label"><h6>Contraseña</h6></label>
-                    <input type="password" class="form-control border border-dark rounded-pill" placeholder="Ibuprofeno@186"
-                           th:field="*{Usuario.PasswordUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.PasswordUsuario')}" th:errors="*{Usuario.PasswordUsuario}"></span>
-                </div>
-                <div class="col-md-6 ">
-                    <label class="form-label"><h6>Celular</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="55-1234-5678"
-                           th:field="*{Usuario.CelularUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.CelularUsuario')}" th:errors="*{Usuario.CelularUsuario}"></span>
-                </div>
-                <div class="col-md-6 ">
-                    <label  class="form-label"><h6>Telefono</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill"  placeholder="(55)1234-5678 "
-                           th:field="*{Usuario.TelefonoUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.TelefonoUsuario')}" th:errors="*{Usuario.TelefonoUsuario}"></span>
-                </div>
-                <div class="col-md-6 ">
-                    <label class="form-label"><h6>CURP</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill"  placeholder="CURP"
-                           th:field="*{Usuario.CURPUsuario}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Usuario.CURPUsuario')}" th:errors="*{Usuario.CURPUsuario}"></span>
-                </div>
-                <div class="col-md-4 ">
-                    <label for="inputRoll" class="form-label "><h6>Roll</h6></label>
-                    <select id="inputRoll" required  class="form-select border border-dark rounded-pill" th:field="*{Usuario.Roll.IdRoll}">
-                        <option selected value="0" >Elije...</option>
-                        <option th:each="roll : ${rolles}" th:value="${roll.IdRoll}" th:text="${roll.NombreRoll}" ></option>
-                    </select>
-                </div>
-                </div>
-                
+
                 <div th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == 0)
                      || (usuario.IdUsuario >0 && Direccion.IdDireccion > 0)
                      || (usuario.IdUsuario == 0 && Direccion.IdDireccion == 0)}">
-                <div class="col-12 ">
-                    <label class="form-label"><h6>Calle</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="Venustiano Carranza"
-                           th:field="*{Direccion.Calle}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Direccion.Calle')}" th:errors="*{Direccion.Calle}"></span>
-                </div>
-                <div class="col-4 ">
-                    <label class="form-label"><h6>Numero Interior</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="46-D"
-                           th:field="*{Direccion.NumeroInterior}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Direccion.NumeroInterior')}" th:errors="*{Direccion.NumeroInterior}"></span>
-                </div>
-                <div class="col-4 ">
-                    <label class="form-label"><h6>Numero Exterior</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" placeholder="04"
-                           th:field="*{Direccion.NumeroExterior}" onpaste="return false">
-                    <span class="text-danger"  th:if="${#fields.hasErrors('Direccion.NumeroExterior')}" th:errors="*{Direccion.NumeroExterior}"></span>
-                </div>
-                <div class="col-4 ">
-                    <label class="form-label"><h6>Codigo Postal</h6></label>
-                    <input type="text" class="form-control border border-dark rounded-pill" disabled placeholder="59001"
-                           id="ddlCodigoPostal" th:field="*{Direccion.Colonia.CodigoPostal}" onpaste="return false">
-                </div>
-                <div class="col-md-4 ">
-                    <label for="ddlPais"class="form-label"><h6>Pais</h6></label>
-                    <select id="ddlPais" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.Estado.Pais.IdPais}">
-                        <option selected value="0">Elije...</option>
-                        <option th:each="pais : ${paises}" th:value="${pais.IdPais}" th:text="${pais.NombrePais}"></option>
-                    </select>
-                </div>
-                
-                <div class="col-md-4 ">
-                    <label for="ddlEstado" class="form-label"><h6>Estado</h6></label>
-                    <select id="ddlEstado" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.Estado.IdEstado}">
-                        <option selected value="0">Elije...</option>
-                        <option th:each="estado : ${estados}" th:value="${estado.IdEstado}" th:text="${estado.NombreEstado}"></option>
-                    </select>
-                </div>
-                <div class="col-md-4 ">
-                    <label for="ddlMunicipio" class="form-label"><h6>Municipio</h6></label>
-                    <select id="ddlMunicipio" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.IdMunicipio}">
-                        <option selected value="0">Elije...</option>
-                        <option th:each="municipio : ${municipios}" th:value="${municipio.IdMunicipio}" th:text="${municipio.NombreMunicipio}"></option>
-                    </select>
-                </div>
-                <div class="col-md-4 ">
-                    <label for="ddlColonia" class="form-label"><h6>Colonia</h6></label>
-                    <select id="ddlColonia" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.IdColonia}">
-                        <option selected value="0">Elije...</option>
-                        <option th:each="colonia : ${colonias}" th:value="${colonia.IdColonia}" th:text="${colonia.NombreColonia}"></option>
-                    </select>
-                </div>
+                    <div class="col-12 ">
+                        <label class="form-label"><h6>Calle</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="Venustiano Carranza"
+                               th:field="*{Direccion.Calle}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Direccion.Calle')}" th:errors="*{Direccion.Calle}"></span>
+                    </div>
+                    <div class="col-4 ">
+                        <label class="form-label"><h6>Numero Interior</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="46-D"
+                               th:field="*{Direccion.NumeroInterior}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Direccion.NumeroInterior')}" th:errors="*{Direccion.NumeroInterior}"></span>
+                    </div>
+                    <div class="col-4 ">
+                        <label class="form-label"><h6>Numero Exterior</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" placeholder="04"
+                               th:field="*{Direccion.NumeroExterior}" onpaste="return false">
+                        <span class="text-danger"  th:if="${#fields.hasErrors('Direccion.NumeroExterior')}" th:errors="*{Direccion.NumeroExterior}"></span>
+                    </div>
+                    <div class="col-4 ">
+                        <label class="form-label"><h6>Codigo Postal</h6></label>
+                        <input type="text" class="form-control border border-dark rounded-pill" disabled placeholder="59001"
+                               id="ddlCodigoPostal" th:field="*{Direccion.Colonia.CodigoPostal}" onpaste="return false">
+                    </div>
+                    <div class="col-md-4 ">
+                        <label for="ddlPais"class="form-label"><h6>Pais</h6></label>
+                        <select id="ddlPais" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.Estado.Pais.IdPais}">
+                            <option selected value="0">Elije...</option>
+                            <option th:each="pais : ${paises}" th:value="${pais.IdPais}" th:text="${pais.NombrePais}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 ">
+                        <label for="ddlEstado" class="form-label"><h6>Estado</h6></label>
+                        <select id="ddlEstado" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.Estado.IdEstado}">
+                            <option selected value="0">Elije...</option>
+                            <option th:each="estado : ${estados}" th:value="${estado.IdEstado}" th:text="${estado.NombreEstado}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 ">
+                        <label for="ddlMunicipio" class="form-label"><h6>Municipio</h6></label>
+                        <select id="ddlMunicipio" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.IdMunicipio}">
+                            <option selected value="0">Elije...</option>
+                            <option th:each="municipio : ${municipios}" th:value="${municipio.IdMunicipio}" th:text="${municipio.NombreMunicipio}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 ">
+                        <label for="ddlColonia" class="form-label"><h6>Colonia</h6></label>
+                        <select id="ddlColonia" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.IdColonia}">
+                            <option selected value="0">Elije...</option>
+                            <option th:each="colonia : ${colonias}" th:value="${colonia.IdColonia}" th:text="${colonia.NombreColonia}"></option>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-12" th:if="*{ (usuario.IdUsuario == 0 && Direccion.IdDireccion == 0) }">
                     <button type="submit" class="btn btn-outline-primary" id="AddUser">
@@ -203,8 +207,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         Agregar Usuario
                     </button>
                 </div>
-                    <div class="col-12" th:if="*{ (usuario.IdUsuario >0 && Direccion.IdDireccion == -1) }">
-                        <button class="btn btn-outline-warning" id="UpdateUser">
+                <div class="col-12" th:if="*{ (usuario.IdUsuario >0 && Direccion.IdDireccion == -1) }">
+                    <button class="btn btn-outline-warning" id="UpdateUser">
                         <i class="bi bi-person-plus"></i>
                         Actualizar Usuario
                     </button>
@@ -241,7 +245,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 }
 
             }
-            
+
             //  # es para seleccionar a traves del id de un elemto dentro del Html 
             $(document).ready(function () { // para que realice una accion siempre se debe poner function("si recibe un valor"){ accion a realizar }
                 //      ****PAIS => ESTADO****
@@ -299,30 +303,59 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         }
                     });
                 });
-
                 //      ****COLONIA => CODIGO_POSTAL****
                 $('#ddlColonia').change(function () {
 //                    const dataId = $(this).find(':selected').data('cp'); // Obtiene el valor del atributo data-id con jQuery
 //                    alert("Codigo Postal: " +dataId); // Imprime el valor del atributo
                     $("#ddlCodigoPostal").val($(this).find(':selected').data('cp'));
                 });
-            });
-            
-            $(document).ready(function(){
-                
-                $('#UpdateUser').click(function (){
+
+
+                $('#UpdateUser').click(function () {
                     alert("presiono el boton de actulizar usuario");
-                    $('#formUsuario').attr('action', 'updateUser');  
+                    $('#formUsuario').attr('action', 'updateUser');
                 });
-                
-                $('#AddAddress').click(function (){
+
+                $('#AddAddress').click(function () {
                     alert("presiono el boton de agregar direccion");
-                    $('#formUsuario').attr('action', 'addAddress');  
+                    $('#formUsuario').attr('action', 'addAddress');
                 });
-                
-                $('#UpdateAddress').click(function (){
+
+                $('#UpdateAddress').click(function () {
                     alert("presiono el boton de actulizar direccion");
-                    $('#formUsuario').attr('action', 'updateAddress');  
+                    $('#formUsuario').attr('action', 'updateAddress');
+                });
+
+
+                $('#CheckActivo').change(function () {
+                    if (this.checked) {
+                        $.ajax({
+                        url: '/usuario/Activo?IdUsuario=' + $("#IdUsuario").val() + "&ActivoUsuario=" + 1,
+                        type: 'POST',
+//                        type: 'GET',
+                        dataType: 'json',
+                        success: function () {
+                            $('#Activo').text('Activo');
+                        }, error: function () {
+                            alert("Ocurrio un error, intentalo más tarde");
+                            $( "#CheckActivo" ).prop( "checked", false );
+                        }
+                    });
+                    } else {
+//                        alert(0);
+                        $.ajax({
+                        url: '/usuario/Activo?IdUsuario=' + $("#IdUsuario").val() + "&ActivoUsuario=" + 0,
+                        type: 'POST',
+//                        type: 'GET',
+                        dataType: 'json',
+                        success: function () {
+                            $('#Activo').text('Inactivo');
+                        }, error: function () {
+                            alert("Ocurrio un error, intentalo más tarde");
+                            $( "#CheckActivo" ).prop( "checked", true );
+                        }
+                    });
+                    }
                 });
                 
             });

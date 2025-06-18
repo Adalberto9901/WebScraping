@@ -363,7 +363,6 @@ Result result = new Result();
                 callableStatement.setInt(13, usuarioDireccion.usuario.Roll.getIdRoll());
                 callableStatement.setString(14, usuarioDireccion.usuario.getImagen());
 
-                //int rowAffected = preparedInsertar.executeUpdate();
                 callableStatement.executeUpdate();
 
                 return 1; // termine satisfactoriamente
@@ -378,6 +377,157 @@ Result result = new Result();
             result.errorMasassge = ex.getLocalizedMessage();
             result.ex = ex;
         }
+        return result;
+
+    }
+
+    @Override
+    public Result UsuarioBusqueda(UsuarioDireccion usuarioBusqueda) {
+    Result result = new Result();
+
+        try {
+
+            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioGetAllDinamico(?,?,?,?,?)}"/*?*/, (CallableStatementCallback<Integer>) callableStatement -> {
+                int IDUsuarioPrevio = 0;
+
+                callableStatement.setString(1, usuarioBusqueda.usuario.getNombreUsuario());
+                callableStatement.setString(2, usuarioBusqueda.usuario.getApellidoPatUsuario());
+                callableStatement.setString(3, usuarioBusqueda.usuario.getApellidoMatUsuario());
+                callableStatement.setInt(4, usuarioBusqueda.usuario.Roll.getIdRoll());
+                /*callableStatement.setInt(5, usuarioBusqueda.usuario.getActivoUsuario());*/
+                callableStatement.registerOutParameter(5, java.sql.Types.REF_CURSOR);
+
+                callableStatement.execute();
+
+                ResultSet resultSet = (ResultSet) callableStatement.getObject(5);
+                 result.objects = new ArrayList<>();
+
+                while (resultSet.next()) {
+                    IDUsuarioPrevio = resultSet.getInt("IDUsuario");
+
+                    
+                    if (!result.objects.isEmpty() && IDUsuarioPrevio == ((UsuarioDireccion) (result.objects.get(result.objects.size() - 1))).usuario.getIdUsuario()) {
+
+                        Direccion Direccion = new Direccion(); 
+
+                        Direccion.setIdDireccion(resultSet.getInt("IdDireccion"));
+                        Direccion.setCalle(resultSet.getString("Calle"));
+                        Direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
+                        Direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
+
+                        Direccion.Colonia = new Colonia();
+                        Direccion.Colonia.setIdColonia(resultSet.getInt("IdColonia"));
+                        Direccion.Colonia.setNombreColonia(resultSet.getString("NombreColonia"));
+                        Direccion.Colonia.setCodigoPostal(resultSet.getString("CodigoPostal"));
+
+                        Direccion.Colonia.Municipio = new Municipio();
+                        Direccion.Colonia.Municipio.setIdMunicipio(resultSet.getInt("IdMunicipio"));
+                        Direccion.Colonia.Municipio.setNombreMunicipio(resultSet.getString("NombreMunicipio"));
+
+                        Direccion.Colonia.Municipio.Estado = new Estado();
+                        Direccion.Colonia.Municipio.Estado.setIdEstado(resultSet.getInt("IdEstado"));
+                        Direccion.Colonia.Municipio.Estado.setNombreEstado(resultSet.getString("NombreEstado"));
+
+                        Direccion.Colonia.Municipio.Estado.Pais = new Pais();
+                        Direccion.Colonia.Municipio.Estado.Pais.setIdPais(resultSet.getInt("IDPais"));
+                        Direccion.Colonia.Municipio.Estado.Pais.setNombrePais(resultSet.getString("NombrePais"));
+
+                        ((UsuarioDireccion) (result.objects.get(result.objects.size() - 1))).Direcciones.add(Direccion);
+
+                    } else {
+
+                        UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
+                        usuarioDireccion.usuario = new Usuario(); 
+
+                        usuarioDireccion.usuario.setIdUsuario(resultSet.getInt("IDUsuario"));
+                        usuarioDireccion.usuario.setNombreUsuario(resultSet.getString("NombreUsuario"));
+                        usuarioDireccion.usuario.setApellidoPatUsuario(resultSet.getString("ApellidoPatUsuario"));
+                        usuarioDireccion.usuario.setApellidoMatUsuario(resultSet.getString("ApellidoMatUsuario"));
+                        usuarioDireccion.usuario.setFechaNacimeintoUsuario(resultSet.getDate("FechaNacimeintoUsuario"));
+                        usuarioDireccion.usuario.setSexoUsuario(resultSet.getString("SexoUsuario"));
+                        usuarioDireccion.usuario.setCorreoUsuario(resultSet.getString("CorreoUsuario"));
+                        usuarioDireccion.usuario.setCelularUsuario(resultSet.getString("CelularUsuario"));
+                        usuarioDireccion.usuario.setPasswordUsuario(resultSet.getString("PasswordUsuario"));
+                        usuarioDireccion.usuario.setTelefonoUsuario(resultSet.getString("TelefonoUsuario"));
+                        usuarioDireccion.usuario.setCURPUsuario(resultSet.getString("CURPUsuario"));
+                        usuarioDireccion.usuario.setUserNombreUsuario(resultSet.getString("UserNameUsuario"));
+                        usuarioDireccion.usuario.setImagen(resultSet.getString("Imagen"));
+
+                        usuarioDireccion.usuario.Roll = new Roll();
+                        usuarioDireccion.usuario.Roll.setIdRoll(resultSet.getInt("IdRoll"));
+                        usuarioDireccion.usuario.Roll.setNombreRoll(resultSet.getString("NombreRoll"));
+
+                        usuarioDireccion.Direcciones = new ArrayList<>(); 
+                        Direccion Direccion = new Direccion(); 
+
+                        Direccion.setIdDireccion(resultSet.getInt("IdDireccion"));
+                        Direccion.setCalle(resultSet.getString("Calle"));
+                        Direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
+                        Direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
+
+                        Direccion.Colonia = new Colonia();
+                        Direccion.Colonia.setIdColonia(resultSet.getInt("IdColonia"));
+                        Direccion.Colonia.setNombreColonia(resultSet.getString("NombreColonia"));
+                        Direccion.Colonia.setCodigoPostal(resultSet.getString("CodigoPostal"));
+
+                        Direccion.Colonia.Municipio = new Municipio();
+                        Direccion.Colonia.Municipio.setIdMunicipio(resultSet.getInt("IdMunicipio"));
+                        Direccion.Colonia.Municipio.setNombreMunicipio(resultSet.getString("NombreMunicipio"));
+
+                        Direccion.Colonia.Municipio.Estado = new Estado();
+                        Direccion.Colonia.Municipio.Estado.setIdEstado(resultSet.getInt("IdEstado"));
+                        Direccion.Colonia.Municipio.Estado.setNombreEstado(resultSet.getString("NombreEstado"));
+
+                        Direccion.Colonia.Municipio.Estado.Pais = new Pais();
+                        Direccion.Colonia.Municipio.Estado.Pais.setIdPais(resultSet.getInt("IDPais"));
+                        Direccion.Colonia.Municipio.Estado.Pais.setNombrePais(resultSet.getString("NombrePais"));
+
+                        usuarioDireccion.Direcciones.add(Direccion);
+                        result.objects.add(usuarioDireccion);
+
+                    }
+
+                } 
+
+                return 1; 
+
+            });
+
+            if (procesoCorrecto == 1) { 
+                result.correct = true;
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMasassge = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Override
+    public Result UpdateActivo(int IdUsuario,int ActivoUsuario) {
+        Result result = new Result();
+        
+       try {
+            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioUpdateActivo(?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
+
+                callableStatement.setInt(1, IdUsuario);
+                callableStatement.setInt(2, ActivoUsuario);
+
+                callableStatement.executeUpdate();
+
+                return 1; 
+
+            });
+            if (procesoCorrecto == 1) {
+                result.correct = true;
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMasassge = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        
         return result;
 
     }
