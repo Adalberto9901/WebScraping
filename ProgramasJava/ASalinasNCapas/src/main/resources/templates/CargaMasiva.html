@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <style>
+            .correct{
+                border-color: green;
+            }
+
+            .incorrect{
+                border-color: red;
+
+            }
+        </style>
+    </head>
+    <body style="background-color:  #d2f77e" layout:fragment="body">
+        <div class="container">
+            <div class="col-12" >
+                <button class="btn btn-outline-dark " id="Archivo" name="Archivo">
+                    <i class="bi bi-browser-firefox"></i>
+                    Archivo
+                </button>
+            </div>
+            <br>
+            <div class="row m-3" id="btnarchivo" >
+                <button  class="btn btn-primary col-md-6" id="btnXlsx" name="btnXlsx" >
+                    <i class="bi bi-filetype-xlsx"></i>
+                    XLSX
+                </button>
+                <button  class="btn btn-primary col-md-6" id="btnTxt" name="btnTxt">
+                    <i class="bi bi-filetype-txt"></i>
+                    TXT
+                </button>
+            </div>
+            <form class="row g-3" id="formArchivo" name="formArchivo" method="post" enctype="multipart/form-data" th:action="@{/usuario/cargaMasiva}" >
+
+                <div class="col-md-4">
+
+                    <label for="Imagen" class="form-label "><h6>Archivo</h6></label>
+                    <input type="file" class="form-control border border-dark rounded-pill"
+                           onpaste="return false" name="archivo" id="archivo" accept=".xlsx, .txt">
+
+                    <button type="submit" class="btn btn-secondary col-md-6" id="btnArchivo" name="btnArchivo">
+                        Subir Archivo
+                    </button>
+                </div>
+
+            </form>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function () {
+                $('#btnarchivo').hide();
+                $('#formArchivo').hide();
+
+                $('#Archivo').click(function () {
+                    $('#btnarchivo').toggle();
+                });
+
+                let archivoTipo = "";
+                $('#btnXlsx').click(function () {
+                    archivoTipo="xlsx";
+                    $('#formArchivo ').toggle();
+                    
+                });
+                $('#btnTxt').click(function () {
+                    archivoTipo="txt";
+                    $('#formArchivo ').toggle();
+                });
+
+                $('#archivo').change(function () {
+                    if (this.files.length > 0) {
+                        var fileName = this.files[0].name;
+                        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+                        if (fileExtension !== archivoTipo) {
+                            alert("Por favor, seleccione un archivo " + archivoTipo.toUpperCase() + " válido.");
+                            this.value = "";
+                        }
+                    }
+                });
+
+            });
+
+        </script>
+    </body>
+</html>

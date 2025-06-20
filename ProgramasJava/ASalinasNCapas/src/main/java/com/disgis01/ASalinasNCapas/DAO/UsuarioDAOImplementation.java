@@ -387,19 +387,19 @@ Result result = new Result();
 
         try {
 
-            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioGetAllDinamico(?,?,?,?,?)}"/*?*/, (CallableStatementCallback<Integer>) callableStatement -> {
+            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioGetAllDinamico(?,?,?,?,?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
                 int IDUsuarioPrevio = 0;
 
                 callableStatement.setString(1, usuarioBusqueda.usuario.getNombreUsuario());
                 callableStatement.setString(2, usuarioBusqueda.usuario.getApellidoPatUsuario());
                 callableStatement.setString(3, usuarioBusqueda.usuario.getApellidoMatUsuario());
                 callableStatement.setInt(4, usuarioBusqueda.usuario.Roll.getIdRoll());
-                /*callableStatement.setInt(5, usuarioBusqueda.usuario.getActivoUsuario());*/
-                callableStatement.registerOutParameter(5, java.sql.Types.REF_CURSOR);
+                callableStatement.setInt(5, usuarioBusqueda.usuario.getActivoUsuario());
+                callableStatement.registerOutParameter(6, java.sql.Types.REF_CURSOR);
 
                 callableStatement.execute();
 
-                ResultSet resultSet = (ResultSet) callableStatement.getObject(5);
+                ResultSet resultSet = (ResultSet) callableStatement.getObject(6);
                  result.objects = new ArrayList<>();
 
                 while (resultSet.next()) {
