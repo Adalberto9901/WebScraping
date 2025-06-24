@@ -27,7 +27,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </button>
             </div>
             <br>
-            <div class="row m-3" id="btnarchivo" >
+            <div class="row m-3" id="btnSeleccion" >
                 <button  class="btn btn-primary col-md-6" id="btnXlsx" name="btnXlsx" >
                     <i class="bi bi-filetype-xlsx"></i>
                     XLSX
@@ -42,35 +42,42 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <div class="col-md-4">
 
                     <label for="Imagen" class="form-label "><h6>Archivo</h6></label>
-                    <input type="file" class="form-control border border-dark rounded-pill"
-                           onpaste="return false" name="archivo" id="archivo" accept=".xlsx, .txt">
+                    <input type="file" class="form-control border border-dark rounded-pill" onpaste="return false" name="archivo" id="archivo" accept=".xlsx, .txt">
 
+                    <br>
                     <button type="submit" class="btn btn-secondary col-md-6" id="btnArchivo" name="btnArchivo">
                         Subir Archivo
                     </button>
                 </div>
 
             </form>
+            <br>
+            <button class="btn btn-secondary col-md-6" id="btnCargar" name="btnCargar">
+                Cargar Archivo
+            </button>
         </div>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script>
             $(document).ready(function () {
-                $('#btnarchivo').hide();
+                $('#btnSeleccion').hide();
                 $('#formArchivo').hide();
+                $('#btnCargar').hide();
 
                 $('#Archivo').click(function () {
-                    $('#btnarchivo').toggle();
+                    $('#btnSeleccion').toggle();
                 });
 
                 let archivoTipo = "";
                 $('#btnXlsx').click(function () {
-                    archivoTipo="xlsx";
+                    archivoTipo = "xlsx";
                     $('#formArchivo ').toggle();
-                    
+                    $('#btnCargar ').toggle();
+
                 });
                 $('#btnTxt').click(function () {
-                    archivoTipo="txt";
+                    archivoTipo = "txt";
                     $('#formArchivo ').toggle();
+                    $('#btnCargar ').toggle();
                 });
 
                 $('#archivo').change(function () {
@@ -83,6 +90,26 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             this.value = "";
                         }
                     }
+                });
+
+                $('#btnArchivo').hide();
+                $('#btnCargar').click(function () {
+                    $('#btnArchivo ').toggle();
+                    $.ajax({
+                        url: '/usuario/cargaMasiva/' + $("#archivo").val(), 
+                        type: 'POST', 
+                        dataType: 'json', 
+                        success: function (response) { 
+                            if ("#archivoCorrecto") {
+                                $('#btnArchivo ').toggle();
+                            } else {
+                                alert("Ocurrio un error, intentalo más tarde");
+                            }
+                        }, error: function () {
+                            console.error("Ocurrio un error, intentalo más tarde");
+                        }
+                    });
+
                 });
 
             });

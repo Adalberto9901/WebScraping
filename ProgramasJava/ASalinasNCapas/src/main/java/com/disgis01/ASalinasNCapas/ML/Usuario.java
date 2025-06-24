@@ -55,8 +55,8 @@ public class Usuario {
     @Pattern(regexp = "[0-9]+\\-[0-9]+\\-[0-9]+", message = "Telefono invalido regex")
     private String TelefonoUsuario;
 
-    @Size(min = 10, max = 18, message = "Nombre entre 10 y 18")
-    @NotEmpty(message = "Ingresa dato :@")
+//    @Size(min = 10, max = 18, message = "Nombre entre 10 y 18")
+//    @NotEmpty(message = "Ingresa dato :@")
     private String CURPUsuario;
 
     @Size(min = 3, max = 20, message = "Nombre entre 3 y 20")

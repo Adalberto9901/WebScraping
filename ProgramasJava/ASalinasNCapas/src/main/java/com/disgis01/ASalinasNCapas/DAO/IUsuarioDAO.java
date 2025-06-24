@@ -6,6 +6,7 @@ package com.disgis01.ASalinasNCapas.DAO;
 
 import com.disgis01.ASalinasNCapas.ML.Result;
 import com.disgis01.ASalinasNCapas.ML.UsuarioDireccion;
+import java.util.List;
 
 /**
  *
@@ -18,7 +19,13 @@ public interface IUsuarioDAO {
     
     Result Add(UsuarioDireccion usuarioDireccion);
     
+    Result Add(List<UsuarioDireccion> usuariosDireccion);
+    
     Result Update(UsuarioDireccion usuarioDireccion);
+    
+    Result Delete(int idUsuario);
+    
+    Result DeleteAddress(int idDireccion);
     
     Result GetById(int idUsuario);
     

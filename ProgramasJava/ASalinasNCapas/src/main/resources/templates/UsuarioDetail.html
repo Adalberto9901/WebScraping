@@ -89,9 +89,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </td>
                         <td>
                             <!--boton para eliminar-->
+                            <a th:href="@{/usuario/deleteAddress?idUsuario=} +${usuarioDireccion.usuario.IdUsuario} +'&IdDireccion='+${direccion.IdDireccion}"
+                               >
                             <button class="btn btn-outline-danger">
                                 <i class="bi bi-trash3"></i>
                             </button>
+                                </a>
                         </td>
                     </tr>
                 </tbody>

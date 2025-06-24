@@ -16,6 +16,7 @@ import com.disgis01.ASalinasNCapas.ML.UsuarioDireccion;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -160,7 +161,7 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
         Result result = new Result();
 
         try {
-            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioInsert(?,?,?,TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
+            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioInsert(?,?,?,TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
 
                 callableStatement.setString(1, usuarioDireccion.usuario.getNombreUsuario());
                 callableStatement.setString(2, usuarioDireccion.usuario.getApellidoPatUsuario());
@@ -171,14 +172,14 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
                 callableStatement.setString(7, usuarioDireccion.usuario.getCelularUsuario());
                 callableStatement.setString(8, usuarioDireccion.usuario.getPasswordUsuario());
                 callableStatement.setString(9, usuarioDireccion.usuario.getTelefonoUsuario());
-                callableStatement.setString(10, usuarioDireccion.usuario.getCURPUsuario());
-                callableStatement.setString(11, usuarioDireccion.usuario.getUserNombreUsuario());
-                callableStatement.setInt(12, usuarioDireccion.usuario.Roll.getIdRoll());
-                callableStatement.setString(13, usuarioDireccion.usuario.getImagen());
-                callableStatement.setString(14, usuarioDireccion.Direccion.getCalle());
-                callableStatement.setString(15, usuarioDireccion.Direccion.getNumeroInterior());
-                callableStatement.setString(16, usuarioDireccion.Direccion.getNumeroExterior());
-                callableStatement.setInt(17, usuarioDireccion.Direccion.Colonia.getIdColonia());
+//                callableStatement.setString(10, usuarioDireccion.usuario.getCURPUsuario());
+                callableStatement.setString(10, usuarioDireccion.usuario.getUserNombreUsuario());
+                callableStatement.setInt(11, usuarioDireccion.usuario.Roll.getIdRoll());
+                callableStatement.setString(12, usuarioDireccion.usuario.getImagen());
+                callableStatement.setString(13, usuarioDireccion.Direccion.getCalle());
+                callableStatement.setString(14, usuarioDireccion.Direccion.getNumeroInterior());
+                callableStatement.setString(15, usuarioDireccion.Direccion.getNumeroExterior());
+                callableStatement.setInt(16, usuarioDireccion.Direccion.Colonia.getIdColonia());
 
                 //int rowAffected = preparedInsertar.executeUpdate();
                 callableStatement.executeUpdate();
@@ -197,6 +198,23 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
         }
         return result;
 
+    }
+
+    @Override
+    public Result Add(List<UsuarioDireccion> usuariosDireccion) {
+        Result result = new Result();
+        try {
+            for (UsuarioDireccion usuarioDireccion : usuariosDireccion) {
+                this.Add(usuarioDireccion);
+            }
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMasassge = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
     }
 
     @Override
@@ -343,7 +361,7 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
 
     @Override
     public Result Update(UsuarioDireccion usuarioDireccion) {
-Result result = new Result();
+        Result result = new Result();
 
         try {
             int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioUpdate(?,?,?,?,TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
@@ -383,7 +401,7 @@ Result result = new Result();
 
     @Override
     public Result UsuarioBusqueda(UsuarioDireccion usuarioBusqueda) {
-    Result result = new Result();
+        Result result = new Result();
 
         try {
 
@@ -400,15 +418,14 @@ Result result = new Result();
                 callableStatement.execute();
 
                 ResultSet resultSet = (ResultSet) callableStatement.getObject(6);
-                 result.objects = new ArrayList<>();
+                result.objects = new ArrayList<>();
 
                 while (resultSet.next()) {
                     IDUsuarioPrevio = resultSet.getInt("IDUsuario");
 
-                    
                     if (!result.objects.isEmpty() && IDUsuarioPrevio == ((UsuarioDireccion) (result.objects.get(result.objects.size() - 1))).usuario.getIdUsuario()) {
 
-                        Direccion Direccion = new Direccion(); 
+                        Direccion Direccion = new Direccion();
 
                         Direccion.setIdDireccion(resultSet.getInt("IdDireccion"));
                         Direccion.setCalle(resultSet.getString("Calle"));
@@ -437,7 +454,7 @@ Result result = new Result();
                     } else {
 
                         UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-                        usuarioDireccion.usuario = new Usuario(); 
+                        usuarioDireccion.usuario = new Usuario();
 
                         usuarioDireccion.usuario.setIdUsuario(resultSet.getInt("IDUsuario"));
                         usuarioDireccion.usuario.setNombreUsuario(resultSet.getString("NombreUsuario"));
@@ -457,8 +474,8 @@ Result result = new Result();
                         usuarioDireccion.usuario.Roll.setIdRoll(resultSet.getInt("IdRoll"));
                         usuarioDireccion.usuario.Roll.setNombreRoll(resultSet.getString("NombreRoll"));
 
-                        usuarioDireccion.Direcciones = new ArrayList<>(); 
-                        Direccion Direccion = new Direccion(); 
+                        usuarioDireccion.Direcciones = new ArrayList<>();
+                        Direccion Direccion = new Direccion();
 
                         Direccion.setIdDireccion(resultSet.getInt("IdDireccion"));
                         Direccion.setCalle(resultSet.getString("Calle"));
@@ -487,13 +504,13 @@ Result result = new Result();
 
                     }
 
-                } 
+                }
 
-                return 1; 
+                return 1;
 
             });
 
-            if (procesoCorrecto == 1) { 
+            if (procesoCorrecto == 1) {
                 result.correct = true;
             }
         } catch (Exception ex) {
@@ -505,10 +522,10 @@ Result result = new Result();
     }
 
     @Override
-    public Result UpdateActivo(int IdUsuario,int ActivoUsuario) {
+    public Result UpdateActivo(int IdUsuario, int ActivoUsuario) {
         Result result = new Result();
-        
-       try {
+
+        try {
             int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioUpdateActivo(?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
 
                 callableStatement.setInt(1, IdUsuario);
@@ -516,7 +533,7 @@ Result result = new Result();
 
                 callableStatement.executeUpdate();
 
-                return 1; 
+                return 1;
 
             });
             if (procesoCorrecto == 1) {
@@ -527,9 +544,61 @@ Result result = new Result();
             result.errorMasassge = ex.getLocalizedMessage();
             result.ex = ex;
         }
-        
+
         return result;
 
+    }
+
+    @Override
+    public Result Delete(int idUsuario) {
+        
+         Result result = new Result();
+
+        try {
+            int procesoCorrecto = jdbcTemplate.execute("{CALL UsuarioDelete(?)}", (CallableStatementCallback<Integer>) callableStatement -> {
+
+                callableStatement.setInt(1, idUsuario);
+
+                callableStatement.executeUpdate();
+
+                return 1;
+
+            });
+            if (procesoCorrecto == 1) {
+                result.correct = true;
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMasassge = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+    
+    @Override
+    public Result DeleteAddress(int idDireccion) {
+        
+         Result result = new Result();
+
+        try {
+            int procesoCorrecto = jdbcTemplate.execute("{CALL DireccionDelete(?)}", (CallableStatementCallback<Integer>) callableStatement -> {
+
+                callableStatement.setInt(1, idDireccion);
+
+                callableStatement.executeUpdate();
+
+                return 1;
+
+            });
+            if (procesoCorrecto == 1) {
+                result.correct = true;
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMasassge = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
     }
 
 }
