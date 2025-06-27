@@ -461,18 +461,19 @@ public class UsuarioController {
                 usuarioDireccion.usuario.setCelularUsuario(row.getCell(6) != null ? row.getCell(6).toString() : "");
                 usuarioDireccion.usuario.setPasswordUsuario(row.getCell(7) != null ? row.getCell(7).toString() : "");
                 usuarioDireccion.usuario.setTelefonoUsuario(row.getCell(8) != null ? row.getCell(8).toString() : "");
-                usuarioDireccion.usuario.setUserNombreUsuario(row.getCell(9) != null ? row.getCell(9).toString() : "");
+                usuarioDireccion.usuario.setCURPUsuario(row.getCell(9) != null ? row.getCell(9).toString() : "");
+                usuarioDireccion.usuario.setUserNombreUsuario(row.getCell(10) != null ? row.getCell(10).toString() : "");
 
                 usuarioDireccion.usuario.Roll = new Roll();
-                usuarioDireccion.usuario.Roll.setIdRoll((int) row.getCell(10).getNumericCellValue());
+                usuarioDireccion.usuario.Roll.setIdRoll((int) row.getCell(11).getNumericCellValue());
 
                 usuarioDireccion.Direccion = new Direccion();
-                usuarioDireccion.Direccion.setCalle(row.getCell(11) != null ? row.getCell(11).toString() : "");
-                usuarioDireccion.Direccion.setNumeroInterior(row.getCell(12) != null ? row.getCell(12).toString() : "");
-                usuarioDireccion.Direccion.setNumeroExterior(row.getCell(13) != null ? row.getCell(13).toString() : "");
+                usuarioDireccion.Direccion.setCalle(row.getCell(12) != null ? row.getCell(12).toString() : "");
+                usuarioDireccion.Direccion.setNumeroInterior(row.getCell(13) != null ? row.getCell(13).toString() : "");
+                usuarioDireccion.Direccion.setNumeroExterior(row.getCell(14) != null ? row.getCell(14).toString() : "");
 
                 usuarioDireccion.Direccion.Colonia = new Colonia();
-                usuarioDireccion.Direccion.Colonia.setIdColonia((int) row.getCell(14).getNumericCellValue());
+                usuarioDireccion.Direccion.Colonia.setIdColonia((int) row.getCell(15).getNumericCellValue());
 
                 usuariosDireccion.add(usuarioDireccion);
             }

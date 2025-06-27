@@ -124,6 +124,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
             usuarioJPA.setTelefonoUsuario(usuarioDireccion.usuario.getTelefonoUsuario());
             usuarioJPA.setCURPUsuario(usuarioDireccion.usuario.getCURPUsuario());
             usuarioJPA.setUserNombreUsuario(usuarioDireccion.usuario.getUserNombreUsuario());
+            usuarioJPA.setImagen(usuarioDireccion.usuario.getImagen());
             usuarioJPA.setActivoUsuario(1);
 
 //            usuarioJPA.Roll = new Roll();
@@ -156,12 +157,43 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
         return result;
     }
 
+    @Transactional
     @Override
     public Result Add(List<UsuarioDireccion> usuariosDireccion) {
         Result result = new Result();
         try {
             for (UsuarioDireccion usuarioDireccion : usuariosDireccion) {
-                this.Add(usuarioDireccion);
+                Usuario usuarioJPA = new Usuario();
+                usuarioJPA.setNombreUsuario(usuarioDireccion.usuario.getNombreUsuario());
+                usuarioJPA.setApellidoPatUsuario(usuarioDireccion.usuario.getApellidoPatUsuario());
+                usuarioJPA.setApellidoMatUsuario(usuarioDireccion.usuario.getApellidoMatUsuario());
+                usuarioJPA.setFechaNacimeintoUsuario(usuarioDireccion.usuario.getFechaNacimeintoUsuario());
+                usuarioJPA.setSexoUsuario(usuarioDireccion.usuario.getSexoUsuario());
+                usuarioJPA.setCorreoUsuario(usuarioDireccion.usuario.getCorreoUsuario());
+                usuarioJPA.setCelularUsuario(usuarioDireccion.usuario.getCelularUsuario());
+                usuarioJPA.setPasswordUsuario(usuarioDireccion.usuario.getPasswordUsuario());
+                usuarioJPA.setTelefonoUsuario(usuarioDireccion.usuario.getTelefonoUsuario());
+                usuarioJPA.setCURPUsuario(usuarioDireccion.usuario.getCURPUsuario());
+                usuarioJPA.setUserNombreUsuario(usuarioDireccion.usuario.getUserNombreUsuario());
+                usuarioJPA.setImagen(usuarioDireccion.usuario.getImagen());
+                usuarioJPA.setActivoUsuario(1);
+
+                Roll roll = entityManager.find(Roll.class, usuarioDireccion.getUsuario().getRoll().getIdRoll());
+                usuarioJPA.setRoll(roll);
+                entityManager.persist(usuarioJPA);
+                entityManager.flush();
+
+                Direccion direccionJPA = new Direccion();
+                direccionJPA.setCalle(usuarioDireccion.Direccion.getCalle());
+                direccionJPA.setNumeroInterior(usuarioDireccion.Direccion.getNumeroInterior());
+                direccionJPA.setNumeroExterior(usuarioDireccion.Direccion.getNumeroExterior());
+                direccionJPA.setActivoDireccion(1);
+
+                Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.getDireccion().getColonia().getIdColonia());
+                direccionJPA.setColonia(colonia);
+
+                direccionJPA.setUsuario(usuarioJPA);
+                entityManager.persist(direccionJPA);
             }
             result.correct = true;
         } catch (Exception ex) {
@@ -171,7 +203,6 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
         }
 
         return result;
-
     }
 
     @Transactional
@@ -195,6 +226,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioJPA.setTelefonoUsuario(usuarioDireccion.usuario.getTelefonoUsuario());
                 usuarioJPA.setCURPUsuario(usuarioDireccion.usuario.getCURPUsuario());
                 usuarioJPA.setUserNombreUsuario(usuarioDireccion.usuario.getUserNombreUsuario());
+                usuarioJPA.setImagen(usuarioDireccion.usuario.getImagen());
 
                 usuarioJPA.Roll = new Roll();
                 usuarioJPA.Roll.setIdRoll(usuarioDireccion.usuario.Roll.getIdRoll());
