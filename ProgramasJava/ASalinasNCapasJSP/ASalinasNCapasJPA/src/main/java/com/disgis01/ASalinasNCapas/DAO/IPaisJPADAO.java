@@ -12,4 +12,6 @@ import com.disgis01.ASalinasNCapas.ML.Result;
  */
 public interface IPaisJPADAO {
     Result GetAllPais();
+        
+    Result PaisGetByCodigoPostal(String CodigoPostal);
 }

@@ -1,4 +1,0 @@
-nombre|apellidoPaterno|apellidoMaterno|FechaNacimeintoUsuario|SexoUsuario|CorreoUsuario|CelularUsuario|PasswordUsuario|TelefonoUsuario|UserNombreUsuario|UsuarioRoll|Calle|NumInterior|NumExterior|IdColonia
-Pamela| Del Norte|Mar|2001-02-02|M|Pamela.mar@gmail.com|55-2648-4654|PasswordPamela|52-8797-6454|UsuarioPamela|4|Avenida Madero|193|157|3
-Florinda|Meza|Torres|1964-06-22|M|Florinda@gmail.com|55-2621-4454|PasswordFlorinda|52-8797-6974|UsuarioFlorinda|5|Calle Regina |piso 14|45-f|20
-Jhasson|Realess|Melchor|1988-05-15|H|jasson.melchor@gmail.com|55-2648-4654|PasswordJhasson|52-8137-4714|UsuarioJhasson|2|Calle Hidalgo|7A|345|17

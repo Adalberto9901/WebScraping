@@ -134,7 +134,7 @@ public class UsuarioController {
     }
 
     @GetMapping("addUser/{idUsuario}")// prepara la vista del formulario
-    public String Formulario(Model model, @PathVariable int idUsuario) {
+    public String Formulario(Model model, @PathVariable int idUsuario, @ModelAttribute UsuarioDireccion usuarioDireccion) {
 
         if (idUsuario < 1) {
 //            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
@@ -147,7 +147,7 @@ public class UsuarioController {
         } else {
 //            model.addAttribute("usuarioDireccion", usuarioDAOImplementation.GetById(idUsuario).object); //se manda la informacion a la vista a traves de una variable
             model.addAttribute("usuarioDireccion", usuarioJPADAOImplementation.GetById(idUsuario).object); //se manda la informacion a la vista a traves de una variable
-
+             model.addAttribute("colonias", paisJPADAOImplementation.PaisGetByCodigoPostal(usuarioDireccion.Direccion.Colonia.getCodigoPostal()).objects);
             return "UsuarioDetail";
         }
 
@@ -322,6 +322,7 @@ public class UsuarioController {
             model.addAttribute("municipios", municipioJPADAOImplementation.GetByIdMunicipios(usuarioDireccion.Direccion.Colonia.Municipio.Estado.getIdEstado()).objects);
 //            model.addAttribute("colonias", coloniaDAOImplementation.GetByIdColonias(usuarioDireccion.Direccion.Colonia.Municipio.getIdMunicipio()).objects);
             model.addAttribute("colonias", coloniaJPADAOImplementation.GetByIdColonias(usuarioDireccion.Direccion.Colonia.Municipio.getIdMunicipio()).objects);
+            model.addAttribute("colonias", paisJPADAOImplementation.PaisGetByCodigoPostal(usuarioDireccion.Direccion.Colonia.getCodigoPostal()).objects);
             model.addAttribute("usuarioDireccion", usuarioDireccion);
 
         }
@@ -369,7 +370,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/cargaMasiva/Procesar")
-    @ResponseBody
+//    @ResponseBody
     public String ProcesarCargaMasiva(HttpSession session, Model model) throws FileNotFoundException, IOException {
 
         String ruta = session.getAttribute("path").toString();
@@ -397,7 +398,7 @@ public class UsuarioController {
         }
         session.removeAttribute("path");
 
-        return "redirect:/usuario/cargaMasiva";
+        return "CargaMasiva";
     }
 
     public List<UsuarioDireccion> LecturaArchivoTXT(MultipartFile archivo) {
@@ -576,4 +577,15 @@ public class UsuarioController {
         return usuarioJPADAOImplementation.UpdateActivo(IdUsuario, ActivoUsuario);
     }
 
+    @GetMapping("CodigoPostal/{CodigoPostal}")
+    @ResponseBody
+    public Result CodigoPostal(@PathVariable String CodigoPostal) {
+//        return coloniaDAOImplementation.GetByIdColonias(idMunicipio);
+        return paisJPADAOImplementation.PaisGetByCodigoPostal(CodigoPostal);
+    }
+    
+        @GetMapping("pruebas")
+    public String Purebas(Model model) {
+        return "Pruebas";
+    }
 }

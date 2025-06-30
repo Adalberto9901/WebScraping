@@ -162,17 +162,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     </div>
                     <div class="col-4 ">
                         <label class="form-label"><h6>Codigo Postal</h6></label>
-                        <input type="text" class="form-control border border-dark rounded-pill" disabled placeholder="59001"
-                               id="ddlCodigoPostal" th:field="*{Direccion.Colonia.CodigoPostal}" onpaste="return false">
+                        <input type="text" class="form-control border border-dark rounded-pill"  placeholder="59001"
+                               id="ddlCodigoPostal" name="ddlCodigoPostal" th:field="*{Direccion.Colonia.CodigoPostal}" onpaste="return false">
                     </div>
                     <div class="col-md-4 ">
-                        <label for="ddlPais"class="form-label"><h6>Pais</h6></label>
+                        <label for="ddlPais" class="form-label"><h6>Pais</h6></label>
                         <select id="ddlPais" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.Estado.Pais.IdPais}">
                             <option selected value="0">Elije...</option>
                             <option th:each="pais : ${paises}" th:value="${pais.IdPais}" th:text="${pais.NombrePais}"></option>
                         </select>
                     </div>
-
                     <div class="col-md-4 ">
                         <label for="ddlEstado" class="form-label"><h6>Estado</h6></label>
                         <select id="ddlEstado" class="form-select border border-dark rounded-pill" th:field="*{Direccion.Colonia.Municipio.Estado.IdEstado}">
@@ -263,7 +262,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 //      ****ESTADO => MUNICIPIO****
                 $("#ddlEstado").change(function () {
                     $.ajax({
-
                         url: '/usuario/Municipio/' + $("#ddlEstado").val(),
                         type: 'GET',
                         dataType: 'json',
@@ -346,6 +344,23 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     }
                 });
 
+                $('#ddlCodigoPostal').blur(function () {
+                    $.ajax({
+                        url: '/usuario/CodigoPostal/' + $("#ddlCodigoPostal").val(),
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            $("#ddlPais").empty();
+                            $("#ddlPais").append('<option value="0">Elije...</option>');
+                            $.each(response.objects, function (i, municipio) {
+                                $("#ddlPais").append("<option value=" + pais.idPais + ">" + pais.nombrePais + "</option>");
+                            });
+                        }, error: function () {
+                            console.error("Ocurrio un error, intentalo más tarde");
+                        }
+                    });
+                });
+                
             });
         </script>
     </body>

@@ -12,4 +12,5 @@ import com.disgis01.ASalinasNCapas.ML.Result;
  */
 public interface IColoniaJPADAO {
     Result GetByIdColonias(int IdMunicipio);
+
 }
