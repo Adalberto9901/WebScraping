@@ -52,13 +52,13 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
             direccionJPA.setNumeroExterior(usuarioDireccion.Direccion.getNumeroExterior());
             direccionJPA.setActivoDireccion(1);
 
+            Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.Colonia.getIdColonia());
             direccionJPA.Colonia = new Colonia();
-            direccionJPA.Colonia.setIdColonia(usuarioDireccion.Direccion.Colonia.getIdColonia());
+            direccionJPA.Colonia.setIdColonia(colonia.getIdColonia());
 
-//            direccionJPA.setUsuario(usuario);
-            direccionJPA.Usuario.setIdUsuario(usuarioDireccion.Usuario.getIdUsuario());
+            direccionJPA.Usuario = new Usuario();
+            direccionJPA.Usuario.setIdUsuario(usuario.getIdUsuario());
             entityManager.persist(direccionJPA);
-//            entityManager.merge(direccionJPA);
 
             result.correct = true;
         } catch (Exception ex) {
@@ -83,10 +83,9 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
                 direccionJPA.setNumeroInterior(usuarioDireccion.Direccion.getNumeroInterior());
                 direccionJPA.setNumeroExterior(usuarioDireccion.Direccion.getNumeroExterior());
 
-//                Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.getColonia().getIdColonia());
-//                direccionJPA.setColonia(colonia);
-                usuarioDireccion.Direccion.Colonia = new Colonia();
-                direccionJPA.Colonia.setIdColonia(usuarioDireccion.Direccion.Colonia.getIdColonia());
+                Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.Colonia.getIdColonia());
+                direccionJPA.Colonia = new Colonia();
+                direccionJPA.Colonia.setIdColonia(colonia.getIdColonia());
 
                 result.correct = true;
             } else {
@@ -112,6 +111,7 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
 
             if (direccionJPA != null) {
                 direccionJPA.setActivoDireccion(0);
+                entityManager.merge(direccionJPA);
                 result.correct = true;
             } else {
                 result.correct = false;
@@ -129,20 +129,20 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
     @Override
     public Result DireccionGetById(int idDireccion) {
         Result result = new Result();
-        result.objects = new ArrayList<>();
+//        result.objects = new ArrayList<>();
         UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
 
         try {
             TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE IdDireccion = :iddireccion", Direccion.class);
             direccionesQuery.setParameter("iddireccion", idDireccion);
-           List<Direccion> direccionesJPA = direccionesQuery.getResultList();
+            Direccion direccionesJPA = direccionesQuery.getSingleResult();
 
-                if (direccionesJPA.size() != 0) {
-                    usuarioDireccion.Direcciones = direccionesJPA;
+            if (direccionesJPA != null) {
+                usuarioDireccion.Direccion = direccionesJPA;
 
-                }
-                result.objects.add(usuarioDireccion);
-            
+            }
+            result.object = usuarioDireccion;
+
             result.correct = true;
         } catch (Exception ex) {
             result.correct = false;

@@ -84,10 +84,9 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
             usuarioJPA.setImagen(usuarioDireccion.Usuario.getImagen());
             usuarioJPA.setActivoUsuario(1);
 
-//            Roll roll = entityManager.find(Roll.class, usuarioDireccion.Usuario.getRoll().getIdRoll());
-//            usuarioJPA.setRoll(roll);
-            usuarioDireccion.Usuario.Roll = new Roll();
-            usuarioDireccion.Usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
+            Roll roll = entityManager.find(Roll.class, usuarioDireccion.Usuario.Roll.getIdRoll());
+            usuarioJPA.Roll = new Roll();
+            usuarioJPA.Roll.setIdRoll(roll.getIdRoll());
             entityManager.persist(usuarioJPA);
             entityManager.flush();
 
@@ -97,12 +96,11 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
             direccionJPA.setNumeroExterior(usuarioDireccion.Direccion.getNumeroExterior());
             direccionJPA.setActivoDireccion(1);
 
+            Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.Colonia.getIdColonia());
             direccionJPA.Colonia = new Colonia();
-            direccionJPA.Colonia.setIdColonia(usuarioDireccion.Direccion.Colonia.getIdColonia());
-//            Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.getColonia().getIdColonia());
-//            direccionJPA.setColonia(colonia);
+            direccionJPA.Colonia.setIdColonia(colonia.getIdColonia());
 
-//            direccionJPA.setUsuario(usuarioJPA);
+            direccionJPA.Usuario = new Usuario();
             direccionJPA.Usuario.setIdUsuario(usuarioJPA.getIdUsuario());
             entityManager.persist(direccionJPA);
 
@@ -136,8 +134,6 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioJPA.setImagen(usuarioDireccion.Usuario.getImagen());
                 usuarioJPA.setActivoUsuario(1);
 
-//                Roll roll = entityManager.find(Roll.class, usuarioDireccion.Usuario.getRoll().getIdRoll());
-//                usuarioJPA.setRoll(roll);
                 usuarioDireccion.Usuario.Roll = new Roll();
                 usuarioDireccion.Usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
                 entityManager.persist(usuarioJPA);
@@ -149,12 +145,9 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 direccionJPA.setNumeroExterior(usuarioDireccion.Direccion.getNumeroExterior());
                 direccionJPA.setActivoDireccion(1);
 
-//                Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.getColonia().getIdColonia());
-//                direccionJPA.setColonia(colonia);
                 usuarioDireccion.Direccion.Colonia = new Colonia();
                 direccionJPA.Colonia.setIdColonia(usuarioDireccion.Direccion.Colonia.getIdColonia());
 
-//                direccionJPA.setUsuario(usuarioJPA);
                 direccionJPA.Usuario.setIdUsuario(usuarioJPA.getIdUsuario());
                 entityManager.persist(direccionJPA);
             }
@@ -193,8 +186,6 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
 
                 usuarioJPA.Roll = new Roll();
                 usuarioJPA.Roll.setIdRoll(usuarioDireccion.Usuario.Roll.getIdRoll());
-//                Roll roll = entityManager.find(Roll.class, usuarioDireccion.getUsuario().getRoll().getIdRoll());
-//                usuarioJPA.setRoll(roll);
 
                 entityManager.merge(usuarioJPA);
 
@@ -239,7 +230,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
     @Override
     public Result GetById(int idUsuario) {
         Result result = new Result();
-        result.objects = new ArrayList<>();
+//        result.objects = new ArrayList<>();
         try {
             TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE IdUsuario = :idUsuario", Usuario.class);
             UsuarioQuery.setParameter("idUsuario", idUsuario);
@@ -257,7 +248,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                     usuarioDireccion.Direcciones = direccionesJPA;
 
                 }
-                result.objects.add(usuarioDireccion);
+                result.object = usuarioDireccion;
             }
             result.correct = true;
         } catch (Exception ex) {
@@ -297,8 +288,8 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.Usuario.setActivoUsuario(usuarioJPA.getActivoUsuario());
 
                 usuarioDireccion.Usuario.Roll = new Roll();
-                usuarioDireccion.Usuario.Roll.setIdRoll(usuarioJPA.getIdUsuario());
-                usuarioDireccion.Usuario.Roll.setNombreRoll(usuarioJPA.getNombreUsuario());
+                usuarioDireccion.Usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
+                usuarioDireccion.Usuario.Roll.setNombreRoll(usuarioJPA.Roll.getNombreRoll());
 
                 result.object = usuarioDireccion;
             }
@@ -318,10 +309,9 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
         try {
             String Consulta = "FROM Usuario WHERE UPPER(NombreUsuario) LIKE UPPER(:nombreusuario) "
                     + " AND LOWER(ApellidoPatUsuario) LIKE LOWER(:apepaterno) "
-                    + "AND LOWER(ApellidoMatUsuario) LIKE LOWER(:apematerno) "
-                    + " order by id ASC";
+                    + "AND LOWER(ApellidoMatUsuario) LIKE LOWER(:apematerno) ";
             Consulta += (usuarioBusqueda.Usuario.Roll.getIdRoll() != 0 ? " AND Roll.IdRoll = : idroll" : "");
-            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery(Consulta, Usuario.class);
+            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery(Consulta + " order by id ASC", Usuario.class);
 
             UsuarioQuery.setParameter("nombreusuario", "%" + usuarioBusqueda.Usuario.getNombreUsuario() + "%");
             UsuarioQuery.setParameter("apepaterno", "%" + usuarioBusqueda.Usuario.getApellidoPatUsuario() + "%");
