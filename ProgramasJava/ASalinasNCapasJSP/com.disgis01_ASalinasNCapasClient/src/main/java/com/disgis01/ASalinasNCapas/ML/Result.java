@@ -10,11 +10,11 @@ import java.util.List;
  *
  * @author Alien 1
  */
-public class Result {
+public class Result<T> {
 
     public boolean correct;
     public String errorMasassge;
     public Exception ex;
-    public Object object;
-    public List<Object> objects;
+    public T object;
+    public List<T> objects;
 }

@@ -4,14 +4,17 @@
  */
 package com.disgis01.ASalinasNCapas.Controller;
 
-
 import com.disgis01.ASalinasNCapas.ML.Colonia;
 import com.disgis01.ASalinasNCapas.ML.Direccion;
+import com.disgis01.ASalinasNCapas.ML.Estado;
+import com.disgis01.ASalinasNCapas.ML.Municipio;
+import com.disgis01.ASalinasNCapas.ML.Pais;
 import com.disgis01.ASalinasNCapas.ML.Result;
 import com.disgis01.ASalinasNCapas.ML.ResultValidarDatos;
 import com.disgis01.ASalinasNCapas.ML.Roll;
 import com.disgis01.ASalinasNCapas.ML.Usuario;
 import com.disgis01.ASalinasNCapas.ML.UsuarioDireccion;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
@@ -31,6 +34,12 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -54,28 +64,51 @@ public class UsuarioController {
 
     @GetMapping("index")
     public String Index(Model model) {
-//        Result result = usuarioDAOImplementation.GetAll(); //se atrapa el reusltado el sera un 1 o un 0
-//        Result result = usuarioJPADAOImplementation.GetAll(); //se atrapa el reusltado el sera un 1 o un 0
-//
-//        if (result.correct) {
-//            model.addAttribute("usuariosDireccion", result.objects); //se manda la informacion a la vista a traves de una variable
-////            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("usuarioDireccion", new UsuarioDireccion());
-//        }
+        RestTemplate restTemplateRoll = new RestTemplate();
+        ResponseEntity<Result<Roll>> responseRolles = restTemplateRoll.exchange("http://localhost:8080/usuarioapi/roll",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Roll>>() {
+        });
+        model.addAttribute("rolles", responseRolles.getBody().objects);
+        
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        List<UsuarioDireccion> usuariosDireccion = response.getBody().objects;
+
+        model.addAttribute("usuariosDireccion", usuariosDireccion);
+        model.addAttribute("usuarioDireccion", new UsuarioDireccion());
         return "IndexUsuario";
     }
 
     @PostMapping("index")
     public String Index(Model model, @ModelAttribute UsuarioDireccion usuarioBusqueda) {
 
-//        model.addAttribute("usuarioBusqueda", usuarioBusqueda); //se manda la informacion a la vista a traves de una variable
-////        model.addAttribute("usuariosDireccion", usuarioDAOImplementation.UsuarioBusqueda(usuarioBusqueda).objects); //se manda la informacion a la vista a traves de una variable
-//        model.addAttribute("usuariosDireccion", usuarioJPADAOImplementation.UsuarioBusqueda(usuarioBusqueda).objects); //se manda la informacion a la vista a traves de una variable
-////        model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//        model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//        model.addAttribute("usuarioDireccion", new UsuarioDireccion());
-
+        RestTemplate restTemplateRoll = new RestTemplate();
+        ResponseEntity<Result<Roll>> responseRolles = restTemplateRoll.exchange("http://localhost:8080/usuarioapi/roll",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Roll>>() {
+        });
+        model.addAttribute("rolles", responseRolles.getBody().objects);
+        
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioBusqueda, httpHeaders);
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/busqueda",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        List<UsuarioDireccion> usuariosDireccion = response.getBody().objects;
+//        Result result = responseBusqueda.getBody();
+        model.addAttribute("usuariosDireccion", usuariosDireccion); //se manda la informacion a la vista a traves de una variable
+        model.addAttribute("usuarioDireccion", new UsuarioDireccion());
         return "IndexUsuario";
     }
 
@@ -83,17 +116,36 @@ public class UsuarioController {
     public String Formulario(Model model, @PathVariable int idUsuario, @ModelAttribute UsuarioDireccion usuarioDireccion) {
 
         if (idUsuario < 1) {
-//            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-//            model.addAttribute("paises", paisJPADAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-////            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
+            RestTemplate restTemplatePais = new RestTemplate();
+            ResponseEntity<Result<Pais>> responsePais = restTemplatePais.exchange("http://localhost:8080/usuarioapi/pais",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Pais>>() {
+            });
+
+            model.addAttribute("paises", responsePais.getBody().objects);
+
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<Roll>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/roll",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Roll>>() {
+            });
+
+            model.addAttribute("rolles", response.getBody().objects);
             model.addAttribute("usuarioDireccion", new UsuarioDireccion());
             return "FormUsuario";
 
         } else {
-//            model.addAttribute("usuarioDireccion", usuarioDAOImplementation.GetById(idUsuario).object); //se manda la informacion a la vista a traves de una variable
-//            model.addAttribute("usuarioDireccion", usuarioJPADAOImplementation.GetById(idUsuario).object); //se manda la informacion a la vista a traves de una variable
-//             model.addAttribute("colonias", paisJPADAOImplementation.PaisGetByCodigoPostal(usuarioDireccion.Direccion.Colonia.getCodigoPostal()).objects);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/" + idUsuario,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+            });
+            UsuarioDireccion usuariosDireccion = response.getBody().object;
+
+            model.addAttribute("usuarioDireccion", usuariosDireccion);
             return "UsuarioDetail";
         }
 
@@ -105,10 +157,22 @@ public class UsuarioController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-//            model.addAttribute("paises", paisJPADAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-////            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
+            RestTemplate restTemplatePais = new RestTemplate();
+            ResponseEntity<Result<Pais>> responsePais = restTemplatePais.exchange("http://localhost:8080/usuarioapi/pais",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Pais>>() {
+            });
+
+            model.addAttribute("paises", responsePais.getBody().objects);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<Roll>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/roll",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Roll>>() {
+            });
+
+            model.addAttribute("rolles", response.getBody().objects);
             model.addAttribute("usuarioDireccion", usuarioDireccion);
             return "FormUsuario";
         }
@@ -121,14 +185,19 @@ public class UsuarioController {
         } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
         }
-
-//        Result result = usuarioDAOImplementation.Add(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//        Result result = usuarioJPADAOImplementation.Add(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//
-//        if (result.correct) {
-//            return "redirect:index";//rediccionar a la vista getAll
-//        }
-
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        Result result = response.getBody();
+        if (result.correct) {
+            return "redirect:index";//rediccionar a la vista getAll
+        }
         return "redirect:index";//rediccionar de nuevo al formulario
     }
 
@@ -138,8 +207,14 @@ public class UsuarioController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<Roll>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/roll",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Roll>>() {
+            });
+
+            model.addAttribute("rolles", response.getBody().objects);
             model.addAttribute("usuarioDireccion", usuarioDireccion);
             return "FormUsuario";
         }
@@ -152,22 +227,38 @@ public class UsuarioController {
         } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
         }
-//        Result result = usuarioDAOImplementation.Update(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//        Result result = usuarioJPADAOImplementation.Update(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//        if (result.correct) {
-//            return "redirect:index";//rediccionar a la vista getAll
-//        }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/"+ usuarioDireccion.usuario.getIdUsuario(),
+                HttpMethod.PUT,
+                requestEntity,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        Result result = response.getBody();
+        if (result.correct) {
+            return "redirect:addUser/" + usuarioDireccion.usuario.getIdUsuario();
+        }
         return "redirect:index";//rediccionar de nuevo al formulario
     }
 
     @GetMapping("deleteUser/{idUsuario}")// prepara la vista del formulario
     public String DeleteUser(Model model, @PathVariable int idUsuario) {
 
-//        Result result = usuarioJPADAOImplementation.Delete(idUsuario);
-////        Result result = usuarioDAOImplementation.Delete(idUsuario);
-//        if (result.correct) {
-//            return "redirect:/usuario/index";
-//        }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Integer> requestEntity = new HttpEntity<>(idUsuario, httpHeaders);
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/"+ idUsuario,
+                HttpMethod.DELETE,
+                requestEntity,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        Result result = response.getBody();
+        if (result.correct) {
+            return "redirect:/usuario/index";
+        }
         return "redirect:/usuario/index";
     }
 
@@ -177,18 +268,38 @@ public class UsuarioController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-//            model.addAttribute("paises", paisJPADAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-////            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
+            RestTemplate restTemplatePais = new RestTemplate();
+            ResponseEntity<Result<Pais>> responsePais = restTemplatePais.exchange("http://localhost:8080/usuarioapi/pais",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Pais>>() {
+            });
+            model.addAttribute("paises", responsePais.getBody().objects);
+
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<Roll>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/roll",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Roll>>() {
+            });
+            model.addAttribute("rolles", response.getBody().objects);
+
             model.addAttribute("usuarioDireccion", usuarioDireccion);
             return "FormUsuario";
         }
-//        Result result = direccionJPADAOImplementation.Add(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-////        Result result = direccionDAOImplementation.Add(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//        if (result.correct) {
-//            return "redirect:addUser/" + usuarioDireccion.usuario.getIdUsuario();//rediccionar a la vista getAll
-//        }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/"+ usuarioDireccion.usuario.getIdUsuario(),
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        Result result = response.getBody();
+        if (result.correct) {
+            return "redirect:addUser/" + usuarioDireccion.usuario.getIdUsuario();//rediccionar a la vista getAll
+        }
         return "redirect:index";//rediccionar de nuevo al formulario
     }
 
@@ -198,8 +309,14 @@ public class UsuarioController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
-//            model.addAttribute("paises", paisJPADAOImplementation.GetAllPais().objects);//se manda pais para cargar el option del select
+            RestTemplate restTemplatePais = new RestTemplate();
+            ResponseEntity<Result<Pais>> responsePais = restTemplatePais.exchange("http://localhost:8080/usuarioapi/pais",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Pais>>() {
+            });
+            model.addAttribute("paises", responsePais.getBody().objects);
+
 ////            model.addAttribute("estados", estadoDAOImplementation.GetByIdEstados(usuarioDireccion.Direccion.Colonia.Municipio.Estado.Pais.getIdPais()).objects);
 //            model.addAttribute("estados", estadoJPADAOImplementation.GetByIdEstados(usuarioDireccion.Direccion.Colonia.Municipio.Estado.Pais.getIdPais()).objects);
 ////            model.addAttribute("municipios", municipioDAOImplementation.GetByIdMunicipios(usuarioDireccion.Direccion.Colonia.Municipio.Estado.getIdEstado()).objects);
@@ -209,22 +326,38 @@ public class UsuarioController {
             model.addAttribute("usuarioDireccion", usuarioDireccion);
             return "FormUsuario";
         }
-//        Result result = direccionDAOImplementation.Update(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//        Result result = direccionJPADAOImplementation.Update(usuarioDireccion); // se manda la informacion al usuarioDAoOImplementation que se cargo con el form
-//        if (result.correct) {
-//            return "redirect:addUser/" + usuarioDireccion.usuario.getIdUsuario();//rediccionar a la vista getAll
-//        }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/"+ usuarioDireccion.Direccion.getIdDireccion(),
+                HttpMethod.PUT,
+                requestEntity,
+                new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+        });
+        Result result = response.getBody();
+        if (result.correct) {
+            return "redirect:addUser/" + usuarioDireccion.usuario.getIdUsuario();//rediccionar a la vista getAll
+        }
         return "redirect:index";//rediccionar de nuevo al formulario
     }
 
     @GetMapping("deleteAddress")// prepara la vista del formulario
     public String DeleteAddress(Model model, @RequestParam int idUsuario, @RequestParam int IdDireccion) {
-
-//        Result result = direccionDAOImplementation.Delete(IdDireccion);
-//        Result result = direccionJPADAOImplementation.Delete(IdDireccion);
-//        if (result.correct) {
-//            return "redirect:/usuario/addUser/" + idUsuario;
-//        }
+        
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Integer> requestEntity = new HttpEntity<>(IdDireccion, httpHeaders);
+        ResponseEntity<Result<Integer>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/"+ IdDireccion,
+                HttpMethod.DELETE,
+                requestEntity,
+                new ParameterizedTypeReference<Result<Integer>>() {
+        });
+        Result result = response.getBody();
+        if (result.correct) {
+            return "redirect:/usuario/addUser/" + idUsuario;
+        }
         return "redirect:/usuario/addUser/" + idUsuario;
     }
 
@@ -232,16 +365,25 @@ public class UsuarioController {
     public String RedireccionarFormulario(@RequestParam int idUsuario, @RequestParam(required = false) Integer IdDireccion, Model model) {
 
         if (IdDireccion == -1) { // editarUsuario
-            UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-            usuarioDireccion.usuario = new Usuario();
-            usuarioDireccion.usuario.setIdUsuario(idUsuario);
-//            usuarioDireccion = (UsuarioDireccion) usuarioDAOImplementation.UsuarioGetSolo(idUsuario).object;
-//            usuarioDireccion = (UsuarioDireccion) usuarioJPADAOImplementation.UsuarioGetSolo(idUsuario).object;
-            usuarioDireccion.Direccion = new Direccion();
-            usuarioDireccion.Direccion.setIdDireccion(-1);
-//            model.addAttribute("rolles", rollDAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-//            model.addAttribute("rolles", rollJPADAOImplementation.GetAllRoll().objects);//se manda roll para cargar el option del select
-            model.addAttribute("usuarioDireccion", usuarioDireccion);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/soloUsuario/" + idUsuario,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+            });
+            UsuarioDireccion usuariosDireccion = response.getBody().object;
+            usuariosDireccion.Direccion = new Direccion();
+            usuariosDireccion.Direccion.setIdDireccion(-1);
+            model.addAttribute("usuarioDireccion", usuariosDireccion);
+
+            RestTemplate restTemplateRoll = new RestTemplate();
+            ResponseEntity<Result<Roll>> responseRolles = restTemplateRoll.exchange("http://localhost:8080/usuarioapi/roll",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Roll>>() {
+            });
+
+            model.addAttribute("rolles", responseRolles.getBody().objects);
 
         } else if (IdDireccion == 0) { //  Agregar direccion
             UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
@@ -249,27 +391,57 @@ public class UsuarioController {
             usuarioDireccion.usuario.setIdUsuario(idUsuario); // identifico a quien voy a darle nueva direccion
             usuarioDireccion.Direccion = new Direccion();
             model.addAttribute("usuarioDireccion", usuarioDireccion);
-//            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);
-//            model.addAttribute("paises", paisJPADAOImplementation.GetAllPais().objects);
-            // roles
+            RestTemplate restTemplatePais = new RestTemplate();
+            ResponseEntity<Result<Pais>> responsePais = restTemplatePais.exchange("http://localhost:8080/usuarioapi/pais",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Pais>>() {
+            });
+            model.addAttribute("paises", responsePais.getBody().objects);
 
         } else { // editar direccion
-            UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-            usuarioDireccion.usuario = new Usuario();
-            usuarioDireccion.usuario.setIdUsuario(idUsuario);
-            usuarioDireccion.Direccion = new Direccion(); // recuperar direccion usuario por id direccion
-//            usuarioDireccion.Direccion = (Direccion) direccionDAOImplementation.DireccionGetById(IdDireccion).object;
-//            usuarioDireccion.Direccion = (Direccion) direccionJPADAOImplementation.DireccionGetById(IdDireccion).object;
-////            model.addAttribute("paises", paisDAOImplementation.GetAllPais().objects);
-//            model.addAttribute("paises", paisJPADAOImplementation.GetAllPais().objects);
-////            model.addAttribute("estados", estadoDAOImplementation.GetByIdEstados(usuarioDireccion.Direccion.Colonia.Municipio.Estado.Pais.getIdPais()).objects);
-//            model.addAttribute("estados", estadoJPADAOImplementation.GetByIdEstados(usuarioDireccion.Direccion.Colonia.Municipio.Estado.Pais.getIdPais()).objects);
-////            model.addAttribute("municipios", municipioDAOImplementation.GetByIdMunicipios(usuarioDireccion.Direccion.Colonia.Municipio.Estado.getIdEstado()).objects);
-//            model.addAttribute("municipios", municipioJPADAOImplementation.GetByIdMunicipios(usuarioDireccion.Direccion.Colonia.Municipio.Estado.getIdEstado()).objects);
-////            model.addAttribute("colonias", coloniaDAOImplementation.GetByIdColonias(usuarioDireccion.Direccion.Colonia.Municipio.getIdMunicipio()).objects);
-//            model.addAttribute("colonias", coloniaJPADAOImplementation.GetByIdColonias(usuarioDireccion.Direccion.Colonia.Municipio.getIdMunicipio()).objects);
-//            model.addAttribute("colonias", paisJPADAOImplementation.PaisGetByCodigoPostal(usuarioDireccion.Direccion.Colonia.getCodigoPostal()).objects);
-            model.addAttribute("usuarioDireccion", usuarioDireccion);
+            RestTemplate restTemplatePais = new RestTemplate();
+            ResponseEntity<Result<Pais>> responsePais = restTemplatePais.exchange("http://localhost:8080/usuarioapi/pais",
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Pais>>() {
+            });
+            model.addAttribute("paises", responsePais.getBody().objects);
+
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/" + IdDireccion,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
+            });
+            UsuarioDireccion usuariosDireccion = response.getBody().object;
+            usuariosDireccion.usuario = new Usuario();
+            usuariosDireccion.usuario.setIdUsuario(idUsuario);
+            model.addAttribute("usuarioDireccion", usuariosDireccion);
+
+            RestTemplate restTemplateEstado = new RestTemplate();
+            ResponseEntity<Result<Estado>> responseEstados = restTemplateEstado.exchange("http://localhost:8080/usuarioapi/estado/" + usuariosDireccion.Direccion.Colonia.Municipio.Estado.Pais.getIdPais(),
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Estado>>() {
+            });
+            model.addAttribute("estados", responseEstados.getBody().objects);
+
+            RestTemplate restTemplateMunicipio = new RestTemplate();
+            ResponseEntity<Result<Municipio>> responseMunicipios = restTemplateMunicipio.exchange("http://localhost:8080/usuarioapi/municipio/" + usuariosDireccion.Direccion.Colonia.Municipio.Estado.getIdEstado(),
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Municipio>>() {
+            });
+            model.addAttribute("municipios", responseMunicipios.getBody().objects);
+
+            RestTemplate restTemplateColonia = new RestTemplate();
+            ResponseEntity<Result<Colonia>> responseColonias = restTemplateColonia.exchange("http://localhost:8080/usuarioapi/colonia/" + usuariosDireccion.Direccion.Colonia.Municipio.getIdMunicipio(),
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<Colonia>>() {
+            });
+            model.addAttribute("colonias", responseColonias.getBody().objects);
 
         }
         return "FormUsuario";
@@ -498,33 +670,54 @@ public class UsuarioController {
     @GetMapping("Estado/{idPais}")
     @ResponseBody // retorno de dato estructurado (objeto en JSON/XML)
     public Result Estado(@PathVariable int idPais) { // recibe el valor que esta siendo enviado desde el ajax en el html
-//        return estadoDAOImplementation.GetByIdEstados(idPais); // se manda la informacion a travez del metodo
-//        return estadoJPADAOImplementation.GetByIdEstados(idPais); // se manda la informacion a travez del metodo
-        return null; // se manda la informacion a travez del metodo
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Result<Estado>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/estado/" + idPais,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Estado>>() {
+        });
+//        List<Estado> estados = response.getBody().objects;
+
+        return response.getBody(); // se manda la informacion a travez del metodo
     }
 
     @GetMapping("Municipio/{idEstado}")
     @ResponseBody
     public Result Municipio(@PathVariable int idEstado) {
-//        return municipioDAOImplementation.GetByIdMunicipios(idEstado);
-//        return municipioJPADAOImplementation.GetByIdMunicipios(idEstado);
-        return null;
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Result<Municipio>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/municipio/" + idEstado,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Municipio>>() {
+        });
+
+        return response.getBody();
     }
 
     @GetMapping("Colonia/{idMunicipio}")
     @ResponseBody
     public Result Colonia(@PathVariable int idMunicipio) {
-//        return coloniaDAOImplementation.GetByIdColonias(idMunicipio);
-//        return coloniaJPADAOImplementation.GetByIdColonias(idMunicipio);
-        return null;
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Result<Colonia>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/colonia/" + idMunicipio,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Colonia>>() {
+        });
+
+        return response.getBody();
     }
 
     @PostMapping("Activo")
     @ResponseBody
     public Result ActivoUsuario(@RequestParam int IdUsuario, @RequestParam int ActivoUsuario) {
-//        return usuarioDAOImplementation.UpdateActivo(IdUsuario, ActivoUsuario);
-//        return usuarioJPADAOImplementation.UpdateActivo(IdUsuario, ActivoUsuario);
-        return null;
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Result<Integer>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/estatus?IdUsuario=" + IdUsuario +"&ActivoUsuario=" + ActivoUsuario,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Integer>>() {
+        });
+
+        return response.getBody();
     }
 
     @GetMapping("CodigoPostal/{CodigoPostal}")
@@ -534,8 +727,8 @@ public class UsuarioController {
 //        return paisJPADAOImplementation.PaisGetByCodigoPostal(CodigoPostal);
         return null;
     }
-    
-        @GetMapping("pruebas")
+
+    @GetMapping("pruebas")
     public String Purebas(Model model) {
         return "Pruebas";
     }
