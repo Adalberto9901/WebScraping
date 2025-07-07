@@ -134,8 +134,9 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioJPA.setImagen(usuarioDireccion.Usuario.getImagen());
                 usuarioJPA.setActivoUsuario(1);
 
-                usuarioDireccion.Usuario.Roll = new Roll();
-                usuarioDireccion.Usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
+                Roll roll = entityManager.find(Roll.class, usuarioDireccion.Usuario.Roll.getIdRoll());
+                usuarioJPA.Roll = new Roll();
+                usuarioJPA.Roll.setIdRoll(roll.getIdRoll());
                 entityManager.persist(usuarioJPA);
                 entityManager.flush();
 
@@ -145,9 +146,11 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 direccionJPA.setNumeroExterior(usuarioDireccion.Direccion.getNumeroExterior());
                 direccionJPA.setActivoDireccion(1);
 
-                usuarioDireccion.Direccion.Colonia = new Colonia();
-                direccionJPA.Colonia.setIdColonia(usuarioDireccion.Direccion.Colonia.getIdColonia());
+                Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.Colonia.getIdColonia());
+                direccionJPA.Colonia = new Colonia();
+                direccionJPA.Colonia.setIdColonia(colonia.getIdColonia());
 
+                direccionJPA.Usuario = new Usuario();
                 direccionJPA.Usuario.setIdUsuario(usuarioJPA.getIdUsuario());
                 entityManager.persist(direccionJPA);
             }
