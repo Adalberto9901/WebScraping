@@ -21,16 +21,27 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -51,6 +62,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,7 +84,7 @@ public class UsuarioController {
                 new ParameterizedTypeReference<Result<Roll>>() {
         });
         model.addAttribute("rolles", responseRolles.getBody().objects);
-        
+
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi",
                 HttpMethod.GET,
@@ -95,7 +108,7 @@ public class UsuarioController {
                 new ParameterizedTypeReference<Result<Roll>>() {
         });
         model.addAttribute("rolles", responseRolles.getBody().objects);
-        
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -231,7 +244,7 @@ public class UsuarioController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
-        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/"+ usuarioDireccion.usuario.getIdUsuario(),
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/" + usuarioDireccion.usuario.getIdUsuario(),
                 HttpMethod.PUT,
                 requestEntity,
                 new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
@@ -250,7 +263,7 @@ public class UsuarioController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Integer> requestEntity = new HttpEntity<>(idUsuario, httpHeaders);
-        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/"+ idUsuario,
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/" + idUsuario,
                 HttpMethod.DELETE,
                 requestEntity,
                 new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
@@ -291,7 +304,7 @@ public class UsuarioController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
-        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/"+ usuarioDireccion.usuario.getIdUsuario(),
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/" + usuarioDireccion.usuario.getIdUsuario(),
                 HttpMethod.POST,
                 requestEntity,
                 new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
@@ -330,7 +343,7 @@ public class UsuarioController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UsuarioDireccion> requestEntity = new HttpEntity<>(usuarioDireccion, httpHeaders);
-        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/"+ usuarioDireccion.Direccion.getIdDireccion(),
+        ResponseEntity<Result<UsuarioDireccion>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/" + usuarioDireccion.Direccion.getIdDireccion(),
                 HttpMethod.PUT,
                 requestEntity,
                 new ParameterizedTypeReference<Result<UsuarioDireccion>>() {
@@ -344,12 +357,12 @@ public class UsuarioController {
 
     @GetMapping("deleteAddress")// prepara la vista del formulario
     public String DeleteAddress(Model model, @RequestParam int idUsuario, @RequestParam int IdDireccion) {
-        
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Integer> requestEntity = new HttpEntity<>(IdDireccion, httpHeaders);
-        ResponseEntity<Result<Integer>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/"+ IdDireccion,
+        ResponseEntity<Result<Integer>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/direccion/" + IdDireccion,
                 HttpMethod.DELETE,
                 requestEntity,
                 new ParameterizedTypeReference<Result<Integer>>() {
@@ -453,218 +466,69 @@ public class UsuarioController {
     }
 
     @PostMapping("cargaMasiva")
-    public String cargaMasiva(@RequestParam MultipartFile archivo, Model model, HttpSession session) throws IOException {
+    public ResponseEntity<String> cargaMasiva(@RequestParam MultipartFile archivo, Model model, HttpSession session) throws IOException {
 
         if (archivo != null && !archivo.isEmpty()) {
-            String fileExtention = archivo.getOriginalFilename().split("\\.")[1];
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("archivo", archivo.getResource());
+            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, httpHeaders);
+            ResponseEntity<Result<MultipartFile>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/cargaMasiva",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<Result<MultipartFile>>() {
+            });
+            Result result = response.getBody();
+            if (result.correct) {
+                String url = "http://localhost:8081/usuario/cargaMasiva/Procesar?encriptado=" + result.errorMasassge;
 
-            String root = System.getProperty("user.dir");
-            String path = "src/main/resources/Archivos";
-            String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            String absolutePath = root + "/" + path + "/" + fecha + archivo.getOriginalFilename();
+                RestTemplate restTemplateUrl = new RestTemplate();
+                ResponseEntity<String> responseUrl = restTemplateUrl.getForEntity(url, String.class);
 
-            List<UsuarioDireccion> usuariosDireccion = new ArrayList<>();
-
-            if (fileExtention.equals("txt")) {
-                usuariosDireccion = LecturaArchivoTXT(archivo);
-                archivo.transferTo(new File(absolutePath));
-            } else { //"xlsx"
-                archivo.transferTo(new File(absolutePath));
-                usuariosDireccion = LecturaArchivoXLSX(new File(absolutePath));
-            }
-
-            List<ResultValidarDatos> listaErrores = resultValidarDatos(usuariosDireccion);
-            if (listaErrores.isEmpty()) {
-                session.setAttribute("path", absolutePath);
-                model.addAttribute("listaErrores", listaErrores);
-                model.addAttribute("archivoCorrecto", true);
-                return "redirect:/usuario/cargaMasiva/Procesar";
-            } else {
-                model.addAttribute("listaErrores", listaErrores);
-                model.addAttribute("archivoCorrecto", false);
+                return responseUrl;
             }
         }
-        return "CargaMasiva";
+        return null;
     }
 
     @GetMapping("/cargaMasiva/Procesar")
-//    @ResponseBody
-    public String ProcesarCargaMasiva(HttpSession session, Model model) throws FileNotFoundException, IOException {
-
-        String ruta = session.getAttribute("path").toString();
-        if (ruta != null && !ruta.isEmpty()) {
-            String fileExtention = ruta.split("\\.")[1];
-
-            List<UsuarioDireccion> usuariosDireccion = new ArrayList<>();
-
-            if (fileExtention.equals("txt")) {
-                MultipartFile multipartFile = convertFileToMultipartFile(new File(ruta));
-                usuariosDireccion = LecturaArchivoTXT(multipartFile);
-            } else {
-                usuariosDireccion = LecturaArchivoXLSX(new File(ruta));
-            }
-
-            List<ResultValidarDatos> listaErrores = resultValidarDatos(usuariosDireccion);
-            if (listaErrores.isEmpty()) {
-//                model.addAttribute("usuariosDireccion", usuarioDAOImplementation.Add(usuariosDireccion).objects);
-//                model.addAttribute("usuariosDireccion", usuarioJPADAOImplementation.Add(usuariosDireccion).objects);
-                return "redirect:/usuario/index";
-            } else {
-                model.addAttribute("listaErrores", listaErrores);
-                model.addAttribute("archivoCorrecto", false);
-            }
-        }
-        session.removeAttribute("path");
-
-        return "CargaMasiva";
-    }
-
-    public List<UsuarioDireccion> LecturaArchivoTXT(MultipartFile archivo) {
-        List<UsuarioDireccion> usuariosDireccion = new ArrayList<>();
-
-        try (InputStream inputStream = archivo.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));) {
-            bufferedReader.readLine();
-            String linea = "";
-            while ((linea = bufferedReader.readLine()) != null) {
+    public String ProcesarCargaMasiva(@RequestParam String encriptado) throws FileNotFoundException, IOException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+        final String claveEncriptacion = "¡secreto!";
+        String desencriptado = desencriptar(encriptado, claveEncriptacion);
+        String[] procesar = new String[4];
+        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\digis\\OneDrive\\Documentos\\Adalberto Salinas Jose\\ProgramasJava\\ASalinasNCapasJSP\\com.disgis01_ASalinasNCapasServiceWeb\\" + desencriptado))) {
+            String linea;
+            
+            while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split("\\|");
-
-                UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-                usuarioDireccion.usuario = new Usuario();
-
-                usuarioDireccion.usuario.setNombreUsuario(datos[0]);
-                usuarioDireccion.usuario.setApellidoPatUsuario(datos[1]);
-                usuarioDireccion.usuario.setApellidoMatUsuario(datos[2]);
-                usuarioDireccion.usuario.setFechaNacimeintoUsuario(new SimpleDateFormat("yyyy-MM-dd").parse(datos[3]));
-                usuarioDireccion.usuario.setSexoUsuario(datos[4]);
-                usuarioDireccion.usuario.setCorreoUsuario(datos[5]);
-                usuarioDireccion.usuario.setCelularUsuario(datos[6]);
-                usuarioDireccion.usuario.setPasswordUsuario(datos[7]);
-                usuarioDireccion.usuario.setTelefonoUsuario(datos[8]);
-                usuarioDireccion.usuario.setUserNombreUsuario(datos[9]);
-
-                usuarioDireccion.usuario.Roll = new Roll();
-                usuarioDireccion.usuario.Roll.setIdRoll(Integer.parseInt(datos[10]));
-
-                usuarioDireccion.Direccion = new Direccion();
-                usuarioDireccion.Direccion.setCalle(datos[11]);
-                usuarioDireccion.Direccion.setNumeroInterior(datos[12]);
-                usuarioDireccion.Direccion.setNumeroExterior(datos[13]);
-
-                usuarioDireccion.Direccion.Colonia = new Colonia();
-                usuarioDireccion.Direccion.Colonia.setIdColonia(Integer.parseInt(datos[14]));
-
-                usuariosDireccion.add(usuarioDireccion);
+                procesar = datos;
             }
-        } catch (Exception e) {
-            usuariosDireccion = null;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return usuariosDireccion;
-    }
-
-    public List<UsuarioDireccion> LecturaArchivoXLSX(File archivo) {
-        List<UsuarioDireccion> usuariosDireccion = new ArrayList<>();
-
-        try (XSSFWorkbook workbook = new XSSFWorkbook(archivo);) {
-            XSSFSheet sheet = workbook.getSheetAt(0);
-
-            for (Row row : sheet) {
-                UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
-                usuarioDireccion.usuario = new Usuario();
-
-                usuarioDireccion.usuario.setNombreUsuario(row.getCell(0) != null ? row.getCell(0).toString() : "");
-                usuarioDireccion.usuario.setApellidoPatUsuario(row.getCell(1) != null ? row.getCell(1).toString() : "");
-                usuarioDireccion.usuario.setApellidoMatUsuario(row.getCell(2) != null ? row.getCell(2).toString() : "");
-                usuarioDireccion.usuario.setFechaNacimeintoUsuario(row.getCell(3).getDateCellValue());
-                usuarioDireccion.usuario.setSexoUsuario(row.getCell(4) != null ? row.getCell(4).toString() : "");
-                usuarioDireccion.usuario.setCorreoUsuario(row.getCell(5) != null ? row.getCell(5).toString() : "");
-                usuarioDireccion.usuario.setCelularUsuario(row.getCell(6) != null ? row.getCell(6).toString() : "");
-                usuarioDireccion.usuario.setPasswordUsuario(row.getCell(7) != null ? row.getCell(7).toString() : "");
-                usuarioDireccion.usuario.setTelefonoUsuario(row.getCell(8) != null ? row.getCell(8).toString() : "");
-                usuarioDireccion.usuario.setCURPUsuario(row.getCell(9) != null ? row.getCell(9).toString() : "");
-                usuarioDireccion.usuario.setUserNombreUsuario(row.getCell(10) != null ? row.getCell(10).toString() : "");
-
-                usuarioDireccion.usuario.Roll = new Roll();
-                usuarioDireccion.usuario.Roll.setIdRoll((int) row.getCell(11).getNumericCellValue());
-
-                usuarioDireccion.Direccion = new Direccion();
-                usuarioDireccion.Direccion.setCalle(row.getCell(12) != null ? row.getCell(12).toString() : "");
-                usuarioDireccion.Direccion.setNumeroInterior(row.getCell(13) != null ? row.getCell(13).toString() : "");
-                usuarioDireccion.Direccion.setNumeroExterior(row.getCell(14) != null ? row.getCell(14).toString() : "");
-
-                usuarioDireccion.Direccion.Colonia = new Colonia();
-                usuarioDireccion.Direccion.Colonia.setIdColonia((int) row.getCell(15).getNumericCellValue());
-
-                usuariosDireccion.add(usuarioDireccion);
+        if (procesar[1].equals("true") && procesar[3].equals( "el documento esta listo para usar una vez") ) {
+                RestTemplate restTemplate = new RestTemplate();
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<String> requestEntity = new HttpEntity<>(encriptado, httpHeaders);
+                ResponseEntity<Result<String>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/cargaMasiva/Procesar?encriptado=" + encriptado,
+                        HttpMethod.GET,
+                        requestEntity,
+                        new ParameterizedTypeReference<Result<String>>() {
+                });
+                Result result = response.getBody();
+                if (result.correct) {
+                    return "redirect:/usuario/index";
+                }
+            } else if (procesar[1].equals( "false") && procesar[3].equals( "el documento subido correctamente")) {
+                return "redirect:/usuario/index";
+            } else if (procesar[1] == "false" && procesar[3] == "contienen un error el documento") {
+                return "CargaMasiva";
             }
-
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
-        }
-        return usuariosDireccion;
-    }
-
-    private List<ResultValidarDatos> resultValidarDatos(List<UsuarioDireccion> usuarios) {
-        List<ResultValidarDatos> listaErrores = new ArrayList<>();
-        int fila = 1;
-        if (usuarios == null) {
-            listaErrores.add(new ResultValidarDatos(0, "La lista no existe", "Lista inexistente"));
-        } else if (usuarios.isEmpty()) {
-            listaErrores.add(new ResultValidarDatos(0, "La lista etsa vacia", "Lista vacia"));
-        } else {
-            for (UsuarioDireccion usuarioDireccion : usuarios) {
-                if (usuarioDireccion.usuario.getNombreUsuario() == null || usuarioDireccion.usuario.getNombreUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getNombreUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getApellidoPatUsuario() == null || usuarioDireccion.usuario.getApellidoPatUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getApellidoPatUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getApellidoMatUsuario() == null || usuarioDireccion.usuario.getApellidoMatUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getApellidoMatUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getFechaNacimeintoUsuario() == null || new SimpleDateFormat("yyyy-MM-dd").format(usuarioDireccion.usuario.getFechaNacimeintoUsuario()).equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, new SimpleDateFormat("yyyy-MM-dd").format(usuarioDireccion.usuario.getFechaNacimeintoUsuario()), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getSexoUsuario() == null || usuarioDireccion.usuario.getSexoUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getSexoUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getCorreoUsuario() == null || usuarioDireccion.usuario.getCorreoUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getCorreoUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getCelularUsuario() == null || usuarioDireccion.usuario.getCelularUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getCelularUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getPasswordUsuario() == null || usuarioDireccion.usuario.getPasswordUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getPasswordUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getTelefonoUsuario() == null || usuarioDireccion.usuario.getTelefonoUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getTelefonoUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.getUserNombreUsuario() == null || usuarioDireccion.usuario.getUserNombreUsuario().equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, usuarioDireccion.usuario.getUserNombreUsuario(), "Campo Obligatorio"));
-                }
-                if (usuarioDireccion.usuario.Roll.getIdRoll() == -1 || Integer.toString(usuarioDireccion.usuario.Roll.getIdRoll()).equals("")) {
-                    listaErrores.add(new ResultValidarDatos(fila, Integer.toString(usuarioDireccion.usuario.Roll.getIdRoll()), "Campo Obligatorio"));
-                }
-                fila++;
-            }
-        }
-        return listaErrores;
-    }
-
-    public static MultipartFile convertFileToMultipartFile(File file, String paramName) throws IOException {
-        String contentType = Files.probeContentType(file.toPath());
-        try (FileInputStream input = new FileInputStream(file)) {
-            return new MockMultipartFile(
-                    paramName,
-                    file.getName(),
-                    contentType,
-                    input
-            );
-        }
-    }
-
-    public static MultipartFile convertFileToMultipartFile(File file) throws IOException {
-        return convertFileToMultipartFile(file, "file"); // default param name
+        return desencriptado;
     }
 
     @GetMapping("Estado/{idPais}")
@@ -711,7 +575,7 @@ public class UsuarioController {
     @ResponseBody
     public Result ActivoUsuario(@RequestParam int IdUsuario, @RequestParam int ActivoUsuario) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Result<Integer>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/estatus?IdUsuario=" + IdUsuario +"&ActivoUsuario=" + ActivoUsuario,
+        ResponseEntity<Result<Integer>> response = restTemplate.exchange("http://localhost:8080/usuarioapi/estatus?IdUsuario=" + IdUsuario + "&ActivoUsuario=" + ActivoUsuario,
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<Integer>>() {
@@ -731,5 +595,41 @@ public class UsuarioController {
     @GetMapping("pruebas")
     public String Purebas(Model model) {
         return "Pruebas";
+    }
+
+    private SecretKeySpec crearClave(String clave) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        byte[] claveEncriptacion = clave.getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        claveEncriptacion = sha.digest(claveEncriptacion);
+        claveEncriptacion = Arrays.copyOf(claveEncriptacion, 16);
+        SecretKeySpec secretKey = new SecretKeySpec(claveEncriptacion, "AES");
+
+        return secretKey;
+    }
+
+    public String desencriptar(String datosEncriptados, String claveSecreta) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+        SecretKeySpec secretKey = this.crearClave(claveSecreta);
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+        byte[] bytesEncriptados = Base64.getDecoder().decode(datosEncriptados);
+        byte[] datosDesencriptados = cipher.doFinal(bytesEncriptados);
+        String datos = new String(datosDesencriptados);
+
+        return datos;
+    }
+
+    public String encriptar(String datos, String claveSecreta) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+        SecretKeySpec secretKey = this.crearClave(claveSecreta);
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        byte[] datosEncriptar = datos.getBytes("UTF-8");
+        byte[] bytesEncriptados = cipher.doFinal(datosEncriptar);
+        String encriptado = Base64.getEncoder().encodeToString(bytesEncriptados);
+
+        return encriptado;
     }
 }
