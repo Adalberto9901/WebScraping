@@ -4,6 +4,7 @@
  */
 package com.disgis01.ASalinasNCapas.ML;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -15,7 +16,9 @@ public class UsuarioDireccion {
 //    @Valid
     public Usuario usuario; //acceso a usuario
 //    @Valid
-    public Direccion Direccion; //acceso a direccion 
+    @JsonProperty("direccion")
+    public Direccion Direccion; //acceso a direccion
+    @JsonProperty("direcciones")
     public List<Direccion> Direcciones; //generar nueva lista de direccion para guardar multiples
 
     public Usuario getUsuario() {
