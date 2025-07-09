@@ -19,38 +19,39 @@ import jakarta.persistence.ManyToOne;
  */
 @Entity
 public class Direccion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "iddireccion")
-    private int IdDireccion;
-    
+    private int idDireccion;
+
     @Column(name = "calle")
     private String Calle;
-    
+
     @Column(name = "numerointerior")
     private String NumeroInterior;
-    
+
     @Column(name = "numeroexterior")
     private String NumeroExterior;
-    
+
     @JoinColumn(name = "idcolonia")
     @ManyToOne
     public Colonia colonia;
-    
+
     @JsonIgnore
     @JoinColumn(name = "idusuario")
     @ManyToOne
     public Usuario usuario;
-    
+
     @Column(name = "activodireccion")
-    private int ActivoDireccion;
+    private int activoDireccion;
 
     public int getIdDireccion() {
-        return IdDireccion;
+        return idDireccion;
     }
 
     public void setIdDireccion(int IdDireccion) {
-        this.IdDireccion = IdDireccion;
+        this.idDireccion = IdDireccion;
     }
 
     public String getCalle() {
@@ -78,12 +79,20 @@ public class Direccion {
     }
 
     public int getActivoDireccion() {
-        return ActivoDireccion;
+        return activoDireccion;
     }
 
     public void setActivoDireccion(int ActivoDireccion) {
-        this.ActivoDireccion = ActivoDireccion;
+        this.activoDireccion = ActivoDireccion;
     }
-    
-    
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+
 }

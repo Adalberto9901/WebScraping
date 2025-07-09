@@ -24,6 +24,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idusuario")
+//    private int id;
     private int idUsuario;
     
     @Column(name = "nombreusuario")
@@ -83,7 +84,7 @@ public class Usuario {
     private String Imagen;
     
     @Column(name = "activousuario")
-    private int ActivoUsuario;
+    private int activoUsuario;
 
     @JoinColumn(name = "idroll")
     @ManyToOne
@@ -96,6 +97,15 @@ public class Usuario {
     public void setIdUsuario(int IdUsuario) {
         this.idUsuario = IdUsuario;
     }
+
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+    
 
     public String getNombreUsuario() {
         return NombreUsuario;
@@ -194,11 +204,11 @@ public class Usuario {
     }
 
     public int getActivoUsuario() {
-        return ActivoUsuario;
+        return activoUsuario;
     }
 
     public void setActivoUsuario(int ActivoUsuario) {
-        this.ActivoUsuario = ActivoUsuario;
+        this.activoUsuario = ActivoUsuario;
     }
 
 }

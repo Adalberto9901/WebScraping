@@ -4,7 +4,8 @@
  */
 package com.disgis01.ASalinasNCapas.DAO;
 
-import com.disgis01.ASalinasNCapas.JPA.Usuario;
+import com.disgis01.ASalinasNCapas.JPA.Estado;
+import com.disgis01.ASalinasNCapas.JPA.Pais;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,12 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Alien 1
  */
-public interface IUsuarioJPADAORepository extends JpaRepository<Usuario, Integer>{
-    
-    public List<Usuario> findAllByOrderByIdUsuarioAsc();
+public interface IEstadoJPADAORepository  extends JpaRepository<Estado, Integer>{
 
-    public List<Usuario> findAllByIdUsuario(int idUsuario);
-
-    public List<Usuario> findByActivoUsuarioOrderByIdUsuarioAsc(int i);
+    public List<Estado> findByPais_IdPais(int idPais);
     
 }

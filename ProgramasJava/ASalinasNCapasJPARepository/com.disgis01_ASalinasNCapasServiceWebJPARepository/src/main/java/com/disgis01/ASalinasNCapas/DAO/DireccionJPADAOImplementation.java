@@ -38,10 +38,12 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
 
         try {
             Usuario usuario = entityManager.find(Usuario.class, usuarioDireccion.usuario.getIdUsuario());
+//            Usuario usuario = entityManager.find(Usuario.class, usuarioDireccion.usuario.getId());
 
             if (usuario == null) {
                 result.correct = false;
                 result.errorMasassge = "Usuario no encontrado con ID: " + usuarioDireccion.usuario.getIdUsuario();
+//                result.errorMasassge = "Usuario no encontrado con ID: " + usuarioDireccion.usuario.getId();
                 return result;
             }
 
@@ -58,6 +60,7 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
 
             direccionJPA.usuario = new Usuario();
             direccionJPA.usuario.setIdUsuario(usuario.getIdUsuario());
+//            direccionJPA.usuario.setId(usuario.getId());
             entityManager.persist(direccionJPA);
 
             result.correct = true;

@@ -21,7 +21,7 @@ public class Estado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idestado")
-    private int IdEstado;
+    private int idEstado;
     
     @Column(name = "nombreestado")
     private String NombreEstado;
@@ -31,11 +31,11 @@ public class Estado {
     public Pais pais;
 
     public int getIdEstado() {
-        return IdEstado;
+        return idEstado;
     }
 
     public void setIdEstado(int IdEstado) {
-        this.IdEstado = IdEstado;
+        this.idEstado = IdEstado;
     }
 
     public String getNombreEstado() {

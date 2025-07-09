@@ -19,17 +19,17 @@ public class Pais {
       @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idpais")
-    private int IdPais;
+    private int idPais;
     
     @Column(name = "nombrepais")
     private String NombrePais;
 
     public int getIdPais() {
-        return IdPais;
+        return idPais;
     }
 
     public void setIdPais(int IdPais) {
-        this.IdPais = IdPais;
+        this.idPais = IdPais;
     }
 
     public String getNombrePais() {

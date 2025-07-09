@@ -46,6 +46,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
 
                 TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.IdUsuario = :idusuario AND ActivoDireccion = 1", Direccion.class);
                 direccionesQuery.setParameter("idusuario", usuario.getIdUsuario());
+//                direccionesQuery.setParameter("idusuario", usuario.getId());
                 List<Direccion> direccionesJPA = direccionesQuery.getResultList();
 
                 if (direccionesJPA.size() != 0) {
@@ -102,6 +103,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
 
             direccionJPA.usuario = new Usuario();
             direccionJPA.usuario.setIdUsuario(usuarioJPA.getIdUsuario());
+//            direccionJPA.usuario.setId(usuarioJPA.getId());
             entityManager.persist(direccionJPA);
 
             result.correct = true;
@@ -149,6 +151,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 direccionJPA.colonia.setIdColonia(usuarioDireccion.direccion.colonia.getIdColonia());
 
                 direccionJPA.usuario.setIdUsuario(usuarioJPA.getIdUsuario());
+//                direccionJPA.usuario.setId(usuarioJPA.getId());
                 entityManager.persist(direccionJPA);
             }
             result.correct = true;
@@ -168,6 +171,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
         Result result = new Result();
 
         try {
+//            Usuario usuarioJPA = entityManager.find(Usuario.class, usuarioDireccion.usuario.getId());
             Usuario usuarioJPA = entityManager.find(Usuario.class, usuarioDireccion.usuario.getIdUsuario());
 
             if (usuarioJPA != null) {
@@ -193,6 +197,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
             } else {
                 result.correct = false;
                 result.errorMasassge = "Usuario no encontrado con ID: " + usuarioDireccion.usuario.getIdUsuario();
+//                result.errorMasassge = "Usuario no encontrado con ID: " + usuarioDireccion.usuario.getId();
             }
         } catch (Exception ex) {
             result.correct = false;
@@ -241,6 +246,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.usuario = usuario;
 
                 TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.IdUsuario = :idusuario AND ActivoDireccion = 1", Direccion.class);
+//                direccionesQuery.setParameter("idusuario", usuario.getId());
                 direccionesQuery.setParameter("idusuario", usuario.getIdUsuario());
                 List<Direccion> direccionesJPA = direccionesQuery.getResultList();
 
@@ -273,6 +279,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.usuario = new Usuario();
 
                 usuarioDireccion.usuario.setIdUsuario(usuarioJPA.getIdUsuario());
+//                usuarioDireccion.usuario.setId(usuarioJPA.getId());
                 usuarioDireccion.usuario.setNombreUsuario(usuarioJPA.getNombreUsuario());
                 usuarioDireccion.usuario.setApellidoPatUsuario(usuarioJPA.getApellidoPatUsuario());
                 usuarioDireccion.usuario.setApellidoMatUsuario(usuarioJPA.getApellidoMatUsuario());
@@ -331,6 +338,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.usuario = new Usuario();
 
                 usuarioDireccion.usuario.setIdUsuario(usuarioJPA.getIdUsuario());
+//                usuarioDireccion.usuario.setId(usuarioJPA.getId());
                 usuarioDireccion.usuario.setNombreUsuario(usuarioJPA.getNombreUsuario());
                 usuarioDireccion.usuario.setApellidoPatUsuario(usuarioJPA.getApellidoPatUsuario());
                 usuarioDireccion.usuario.setApellidoMatUsuario(usuarioJPA.getApellidoMatUsuario());
@@ -351,6 +359,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
 
                 TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.IdUsuario = :idusuario", Direccion.class);
                 direccionesQuery.setParameter("idusuario", usuarioJPA.getIdUsuario());
+//                direccionesQuery.setParameter("idusuario", usuarioJPA.getId());
                 List<Direccion> direccionesJPA = direccionesQuery.getResultList();
 
                 if (direccionesJPA.size() != 0) {

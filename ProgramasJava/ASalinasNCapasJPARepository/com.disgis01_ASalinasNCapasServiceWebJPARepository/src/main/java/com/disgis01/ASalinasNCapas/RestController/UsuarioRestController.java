@@ -8,6 +8,11 @@ import com.disgis01.ASalinasNCapas.DAO.ColoniaJPADAOImplementation;
 import com.disgis01.ASalinasNCapas.DAO.DireccionJPADAOImplementation;
 import com.disgis01.ASalinasNCapas.DAO.EstadoJPADAOImplementation;
 import com.disgis01.ASalinasNCapas.DAO.IDireccionJPADAORepository;
+import com.disgis01.ASalinasNCapas.DAO.IMunicipioJPADAORepository;
+import com.disgis01.ASalinasNCapas.DAO.IEstadoJPADAORepository;
+import com.disgis01.ASalinasNCapas.DAO.IColoniaJPADAORepository;
+import com.disgis01.ASalinasNCapas.DAO.IPaisJPADAORepository;
+import com.disgis01.ASalinasNCapas.DAO.IRollJPADAORepository;
 import com.disgis01.ASalinasNCapas.DAO.IUsuarioJPADAORepository;
 import com.disgis01.ASalinasNCapas.DAO.MunicipioJPADAOImplementation;
 import com.disgis01.ASalinasNCapas.DAO.PaisJPADAOImplementation;
@@ -16,16 +21,23 @@ import com.disgis01.ASalinasNCapas.DAO.RollJPADAOImplementation;
 import com.disgis01.ASalinasNCapas.DAO.UsuarioJPADAOImplementation;
 import com.disgis01.ASalinasNCapas.JPA.Colonia;
 import com.disgis01.ASalinasNCapas.JPA.Direccion;
+import com.disgis01.ASalinasNCapas.JPA.Estado;
+import com.disgis01.ASalinasNCapas.JPA.Municipio;
+import com.disgis01.ASalinasNCapas.JPA.Pais;
 import com.disgis01.ASalinasNCapas.JPA.Result;
 import com.disgis01.ASalinasNCapas.JPA.Roll;
 import com.disgis01.ASalinasNCapas.JPA.Usuario;
 import com.disgis01.ASalinasNCapas.JPA.UsuarioDireccion;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,7 +58,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
@@ -57,13 +68,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -78,6 +86,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author Alien 1
  */
+@Tag(name = "Controlador Rest para Usuario", description = "Controllador donde se ejecuta todas las peticiones del cliente dentro de una Operacion CRUD")
 @RestController
 @RequestMapping("/usuarioapi")
 public class UsuarioRestController {
@@ -100,20 +109,38 @@ public class UsuarioRestController {
     private IUsuarioJPADAORepository IUsuarioJPADAORepository;
     @Autowired
     private IDireccionJPADAORepository IDireccionJPADAORepository;
+    @Autowired
+    private IRollJPADAORepository IRollJPADAORepository;
+    @Autowired
+    private IPaisJPADAORepository IPaisJPADAORepository;
+    @Autowired
+    private IEstadoJPADAORepository IEstadoJPADAORepository;
+    @Autowired
+    private IMunicipioJPADAORepository IMunicipioJPADAORepository;
+    @Autowired
+    private IColoniaJPADAORepository IColoniaJPADAORepository;
 
+    @Operation(summary = "Muestra todos los Usuarios junto con sus Direcciones, que no tienen baja logica de forma ascendente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra todos los UsuarioDireccion",
+    content = { @Content(mediaType = "application/json",
+      schema = @Schema(implementation = UsuarioDireccion.class)) }),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar todos los UsuarioDireccion")})
     @GetMapping
     public ResponseEntity GetAll() {
         try {
             Result result = new Result();
             result.objects = new ArrayList<>();
-            List<Usuario> usuarios = IUsuarioJPADAORepository.findAll();
+            List<Usuario> usuarios = IUsuarioJPADAORepository.findByActivoUsuarioOrderByIdUsuarioAsc(1);
+//            List<Usuario> usuarios = IUsuarioJPADAORepository.findAllByOrderByIdUsuarioAsc();
+//            List<Usuario> usuarios = IUsuarioJPADAORepository.findAll();
             for (Usuario usuario : usuarios) {
-                UsuarioDireccion usuariosDireccion = new UsuarioDireccion();
-                usuariosDireccion.usuario = usuario;
+                List<Direccion> direcciones = IDireccionJPADAORepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
 
-                List<Direccion> direcciones = IDireccionJPADAORepository.findByUsuarioId(usuario.getIdUsuario());
-                usuariosDireccion.direcciones = direcciones;
-                result.objects.add(usuariosDireccion);
+                UsuarioDireccion usuarioDireccion = new UsuarioDireccion();
+                usuarioDireccion.usuario = usuario;
+                usuarioDireccion.direcciones = direcciones;
+                result.objects.add(usuarioDireccion);
 
             }
             result.correct = true;
@@ -134,10 +161,29 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra correctamente un solo UsuarioDireccion"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar un solo UsuarioDireccion")})
+    @Operation(summary = "Muestra al Usuairo y su(s) Direccion(es), que no sean baja logica")
     @GetMapping("{idUsuario}")
     public ResponseEntity GetById(@PathVariable int idUsuario) {
         try {
-            Result result = UsuarioJPADAOImplementation.GetById(idUsuario);
+//            Result result = UsuarioJPADAOImplementation.GetById(idUsuario);
+            Result result = new Result();
+            List<Usuario> usuarios = IUsuarioJPADAORepository.findAllByIdUsuario(idUsuario);
+//            List<Usuario> usuarios = IUsuarioJPADAORepository.findAll();
+            for (Usuario usuario : usuarios) {
+                UsuarioDireccion usuariosDireccion = new UsuarioDireccion();
+                usuariosDireccion.usuario = usuario;
+//                List<Direccion> direcciones = IDireccionJPADAORepository.findByUsuarioId(usuario.getIdUsuario());
+
+//                List<Direccion> direcciones = IDireccionJPADAORepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
+                List<Direccion> direcciones = IDireccionJPADAORepository.findByUsuario_IdUsuarioAndActivoDireccion(usuario.getIdUsuario(), 1);
+                usuariosDireccion.direcciones = direcciones;
+                result.object = usuariosDireccion;
+
+            }
+            result.correct = true;
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -150,16 +196,26 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra correctamente Usuario"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Usuario")})
+    @Operation(summary = "Muestra solo la informacion perteniecinete del Usuario")
     @GetMapping("soloUsuario/{idUsuario}")
     public ResponseEntity UsuarioGetSolo(@PathVariable int idUsuario) {
         try {
+//            Result result = UsuarioJPADAOImplementation.UsuarioGetSolo(idUsuario);
             Result result = new Result();
-            result.objects = new ArrayList<>();
-            Optional<Usuario> usuario = IUsuarioJPADAORepository.findById(idUsuario);
+            List<Usuario> usuarios = IUsuarioJPADAORepository.findAllByIdUsuario(idUsuario);
+//            List<Usuario> usuarios = IUsuarioJPADAORepository.findAll();
+            for (Usuario usuario : usuarios) {
+                UsuarioDireccion usuariosDireccion = new UsuarioDireccion();
+                usuariosDireccion.usuario = usuario;
 
-            result.object = usuario;
-            result.correct = true;;
+                result.object = usuariosDireccion;
 
+            }
+
+            result.correct = true;
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -172,10 +228,26 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra correctamente Direccion"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar la Direccion")})
+    @Operation(summary = "Muestra solo la informacion perteneciente a la Direccion el cual esta relacionado a un Usuario de forma ascendente")
     @GetMapping("direccion/{idDireccion}")
     public ResponseEntity DireccionGetById(@PathVariable int idDireccion) {
         try {
-            Result result = DireccionJPADAOImplementation.DireccionGetById(idDireccion);
+//            Result result = DireccionJPADAOImplementation.DireccionGetById(idDireccion);
+            Result result = new Result();
+            List<Direccion> direcciones = IDireccionJPADAORepository.findAllByIdDireccion(idDireccion);
+//            List<Usuario> usuarios = IUsuarioJPADAORepository.findAll();
+            for (Direccion direccion : direcciones) {
+                UsuarioDireccion usuariosDireccion = new UsuarioDireccion();
+                usuariosDireccion.direccion = direccion;
+
+                result.object = usuariosDireccion;
+
+            }
+
+            result.correct = true;
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -188,10 +260,38 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "UsuarioDireccion agregado correcetamente"),
+        @ApiResponse(responseCode = "404", description = "Error al nisertar UsuarioDireccion")})
+    @Operation(summary = "Agrega la informacion del Usuario y la Direccion con la que se esta agregando")
     @PostMapping
     public ResponseEntity AddUsuarioDireccion(@RequestBody UsuarioDireccion usuarioDireccion) {
         try {
-            Result result = UsuarioJPADAOImplementation.Add(usuarioDireccion);
+//            Result result = UsuarioJPADAOImplementation.Add(usuarioDireccion);
+            Result result = new Result();
+            try {
+
+                Usuario usuarioJPA = usuarioDireccion.usuario;
+                usuarioJPA.setActivoUsuario(1);
+
+                Usuario usuario = IUsuarioJPADAORepository.save(usuarioJPA);
+
+//            Optional<Roll> rollJPA = IRollJPADAORepository.findById(usuarioDireccion.usuario.roll.getIdRoll());
+                Direccion direccionJPA = usuarioDireccion.direccion;
+                direccionJPA.setActivoDireccion(1);
+                direccionJPA.setUsuario(usuario);
+
+                Direccion direccion = IDireccionJPADAORepository.save(usuarioDireccion.direccion);
+//            Usuario usuario = usuarioRepository.save(usuarioDireccion.usuario);
+//            usuarioDireccion.direccion.setUsuario(usuario);
+//            Direccion direccion = direccionRepository.save(usuarioDireccion.direccion);
+
+                result.correct = true;
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -204,6 +304,10 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Direccion agregada correctamente"),
+        @ApiResponse(responseCode = "404", description = "Error al insertar la Direccion")})
+    @Operation(summary = "Se Agrega una Direccon a un Usuario existente y cuya Id se utiliza para relacionar la Direccion nueva con el Usuario deseado")
     @PostMapping("direccion/{idUsuario}")
     public ResponseEntity AddDireccionByUsuario(@PathVariable int idUsuario, @RequestBody UsuarioDireccion usuarioDireccion) {
         try {
@@ -211,8 +315,24 @@ public class UsuarioRestController {
                 usuarioDireccion.setUsuario(new Usuario());
             }
             usuarioDireccion.getUsuario().setIdUsuario(idUsuario);
+//            usuarioDireccion.getUsuario().setId(idUsuario);
 
-            Result result = DireccionJPADAOImplementation.Add(usuarioDireccion);
+//            Result result = DireccionJPADAOImplementation.Add(usuarioDireccion);
+            Result result = new Result();
+            try {
+
+                Direccion direccionJPA = usuarioDireccion.getDireccion();
+                direccionJPA.setActivoDireccion(1);
+
+                direccionJPA.setUsuario(usuarioDireccion.getUsuario());
+                Direccion direccion = IDireccionJPADAORepository.save(direccionJPA);
+
+                result.correct = true;
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -225,6 +345,10 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Update correcto de Usuario"),
+        @ApiResponse(responseCode = "404", description = "Error al actualizar el Usuario")})
+    @Operation(summary = "Actualiza la informacion del Usuario en base al Id que se este trabajando, que sea exitente y que no sea una baja logica, sin afectar la informacion de las Direcciones que esten relaciondas")
     @PutMapping("{idUsuario}")
     public ResponseEntity UpdateUsuario(@PathVariable int idUsuario, @RequestBody UsuarioDireccion usuarioDireccion) {
         try {
@@ -232,7 +356,23 @@ public class UsuarioRestController {
                 usuarioDireccion.setUsuario(new Usuario());
             }
             usuarioDireccion.getUsuario().setIdUsuario(idUsuario);
-            Result result = UsuarioJPADAOImplementation.Update(usuarioDireccion);
+//            usuarioDireccion.getUsuario().setId(idUsuario);
+//            Result result = UsuarioJPADAOImplementation.Update(usuarioDireccion);
+            Result result = new Result();
+            try {
+
+                Usuario usuarioJPA = usuarioDireccion.getUsuario();
+                usuarioJPA.setActivoUsuario(1);
+
+//                usuarioJPA.setUsuario(usuarioDireccion.getUsuario());
+                Usuario usuario = IUsuarioJPADAORepository.save(usuarioJPA);
+
+                result.correct = true;
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -245,6 +385,10 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Update correcto de Direccion"),
+        @ApiResponse(responseCode = "404", description = "Error al actulizar la Direccion")})
+    @Operation(summary = "Actualiza la informacion de la Direccion en base al Id del que se este trabajando y sin afecatar la informacion del Usuario que este relacionada")
     @PutMapping("direccion/{idDireccion}")
     public ResponseEntity UpdateDireccinoByUsuario(@PathVariable int idDireccion, @RequestBody UsuarioDireccion usuarioDireccion) {
         try {
@@ -252,7 +396,22 @@ public class UsuarioRestController {
                 usuarioDireccion.setDireccion(new Direccion());
             }
             usuarioDireccion.getDireccion().setIdDireccion(idDireccion);
-            Result result = DireccionJPADAOImplementation.Update(usuarioDireccion);
+//            Result result = DireccionJPADAOImplementation.Update(usuarioDireccion);
+            Result result = new Result();
+            try {
+
+                Direccion direccionJPA = usuarioDireccion.getDireccion();
+                direccionJPA.setActivoDireccion(1);
+
+                direccionJPA.setUsuario(usuarioDireccion.getUsuario());
+                Direccion direccion = IDireccionJPADAORepository.save(direccionJPA);
+
+                result.correct = true;
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -265,10 +424,33 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Elimancion correcta de Usuario"),
+        @ApiResponse(responseCode = "404", description = "Error al eliminar el Usuario")})
+    @Operation(summary = "Hace una baja logica del Usuario en base al Id para no perder dicha informacion ademas que no se muetra en la vista general")
     @DeleteMapping("{idUsuario}")
     public ResponseEntity DeleteUsuarioDireccion(@PathVariable int idUsuario) {
         try {
-            Result result = UsuarioJPADAOImplementation.Delete(idUsuario);
+//            Result result = UsuarioJPADAOImplementation.Delete(idUsuario);
+            Result result = new Result();
+            try {
+
+                Optional<Usuario> usuarioJPA = IUsuarioJPADAORepository.findById(idUsuario);
+                if (usuarioJPA != null) {
+                    Usuario usuario = usuarioJPA.get();
+                    usuario.setActivoUsuario(0);
+                    Usuario usuarioEliminar = IUsuarioJPADAORepository.save(usuario);
+                    result.correct = true;
+                } else {
+                    result.correct = false;
+                    result.errorMasassge = "No se encontró la dirección con ID: " + idUsuario;
+                }
+
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -281,10 +463,33 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Eliminacion correcta de Direccion"),
+        @ApiResponse(responseCode = "404", description = "Error al eliminar la Direccion")})
+    @Operation(summary = "Hace una baja logica de Direccion en base al Id para mantener la informacion ademas que no se muestra en la vista de detalles")
     @DeleteMapping("direccion/{idDireccion}")
     public ResponseEntity DeleteDireccionByUsuario(@PathVariable("idDireccion") int idDireccion) {
         try {
-            Result result = DireccionJPADAOImplementation.Delete(idDireccion);
+//            Result result = DireccionJPADAOImplementation.Delete(idDireccion);
+            Result result = new Result();
+            try {
+
+                Optional<Direccion> direccionJPA = IDireccionJPADAORepository.findById(idDireccion);
+                if (direccionJPA != null) {
+                    Direccion direccion = direccionJPA.get();
+                    direccion.setActivoDireccion(0);
+                    Direccion direccionEliminar = IDireccionJPADAORepository.save(direccion);
+                    result.correct = true;
+                } else {
+                    result.correct = false;
+                    result.errorMasassge = "No se encontró la dirección con ID: " + idDireccion;
+                }
+
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -297,10 +502,25 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muesta todos los Rolles"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Roll")})
+    @Operation(summary = "Muetra todos los Rolles en orden asendente")
     @GetMapping("roll")
     public ResponseEntity GetAllRoll() {
         try {
-            Result result = RollJPADAOImplementation.GetAllRoll();
+//            Result result = RollJPADAOImplementation.GetAllRoll();
+            Result result = new Result();
+            result.objects = new ArrayList<>();
+//            List<Roll> rolles = IRollJPADAORepository.findAllByOrderByIdRollAsc();
+            List<Roll> rolles = IRollJPADAORepository.findAll();
+            for (Roll roll : rolles) {
+
+                result.objects.add(roll);
+
+            }
+            result.correct = true;
+
             if (result.correct) {
                 if (result.objects.size() == 0) {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
@@ -317,10 +537,24 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra todos los Paises"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Pais")})
+    @Operation(summary = "Muestra todos los Paises en forma ascendente")
     @GetMapping("pais")
     public ResponseEntity GetAllPais() {
         try {
-            Result result = PaisJPADAOImplementation.GetAllPais();
+//            Result result = PaisJPADAOImplementation.GetAllPais();
+            Result result = new Result();
+            result.objects = new ArrayList<>();
+            List<Pais> paises = IPaisJPADAORepository.findAllByOrderByIdPaisAsc();
+//            List<Pais> paises = IPaisJPADAORepository.findAll();
+            for (Pais pais : paises) {
+
+                result.objects.add(pais);
+
+            }
+            result.correct = true;
             if (result.correct) {
                 if (result.objects.size() == 0) {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
@@ -337,10 +571,23 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra los Estados relacionados"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Estado")})
+    @Operation(summary = "Muestra los Estados relacionados con el Id del Pais")
     @GetMapping("estado/{idPais}")
     public ResponseEntity EstadoGetById(@PathVariable int idPais) {
         try {
-            Result result = EstadoJPADAOImplementation.GetByIdEstados(idPais);
+//            Result result = EstadoJPADAOImplementation.GetByIdEstados(idPais);
+            Result result = new Result();
+            result.objects = new ArrayList<>();
+            List<Estado> estados = IEstadoJPADAORepository.findByPais_IdPais(idPais);
+            for (Estado estado : estados) {
+
+                result.objects.add(estado);
+
+            }
+            result.correct = true;
             if (result.correct) {
                 if (result.objects.size() == 0) {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
@@ -357,10 +604,23 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra los Municipios relacionados"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Municipio")})
+    @Operation(summary = "Muestra los Municipios relacionados con el Id del Estado")
     @GetMapping("municipio/{idEstado}")
     public ResponseEntity MunicipioGetById(@PathVariable int idEstado) {
         try {
-            Result result = MunicipioJPADAOImplementation.GetByIdMunicipios(idEstado);
+//            Result result = MunicipioJPADAOImplementation.GetByIdMunicipios(idEstado);
+            Result result = new Result();
+            result.objects = new ArrayList<>();
+            List<Municipio> municipios = IMunicipioJPADAORepository.findByEstado_IdEstado(idEstado);
+            for (Municipio municipio : municipios) {
+
+                result.objects.add(municipio);
+
+            }
+            result.correct = true;
             if (result.correct) {
                 if (result.objects.size() == 0) {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
@@ -377,10 +637,23 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Muestra las Colonias relacionadas"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar la Colonia")})
+    @Operation(summary = "Muestra las Colonias relacionados con el Id del Municipio")
     @GetMapping("colonia/{idMunicipio}")
     public ResponseEntity ColoniaGetById(@PathVariable int idMunicipio) {
         try {
-            Result result = ColoniaJPADAOImplementation.GetByIdColonias(idMunicipio);
+//            Result result = ColoniaJPADAOImplementation.GetByIdColonias(idMunicipio);
+            Result result = new Result();
+            result.objects = new ArrayList<>();
+            List<Colonia> colonias = IColoniaJPADAORepository.findByMunicipio_IdMunicipio(idMunicipio);
+            for (Colonia colonia : colonias) {
+
+                result.objects.add(colonia);
+
+            }
+            result.correct = true;
             if (result.correct) {
                 if (result.objects.size() == 0) {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
@@ -397,10 +670,33 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Modificacion del Estatus del Usuario"),
+        @ApiResponse(responseCode = "404", description = "Error al modificar el estaus del Usuario")})
+    @Operation(summary = "Modifica el Estatus del Usuario que recibe por medio de la URL el cual es 0 para inactivo o 1 para activo")
     @GetMapping("estatus")
     public ResponseEntity EstatusUsuario(@RequestParam int IdUsuario, @RequestParam int ActivoUsuario) {
         try {
-            Result result = UsuarioJPADAOImplementation.UpdateActivo(IdUsuario, ActivoUsuario);
+//            Result result = UsuarioJPADAOImplementation.UpdateActivo(IdUsuario, ActivoUsuario);
+            Result result = new Result();
+            try {
+
+                Optional<Usuario> usuarioJPA = IUsuarioJPADAORepository.findById(IdUsuario);
+                if (usuarioJPA != null) {
+                    Usuario usuario = usuarioJPA.get();
+                    usuario.setActivoUsuario(ActivoUsuario);
+                    Usuario usuarioEliminar = IUsuarioJPADAORepository.save(usuario);
+                    result.correct = true;
+                } else {
+                    result.correct = false;
+                    result.errorMasassge = "No se encontró la dirección con ID: " + IdUsuario;
+                }
+
+            } catch (Exception ex) {
+                result.correct = false;
+                result.errorMasassge = ex.getLocalizedMessage();
+                result.ex = ex;
+            }
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
@@ -413,6 +709,10 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Busqueda dinamica correcta"),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar la informacion de la busqueda")})
+    @Operation(summary = "Recibe parametros de nombre, apellido paterno, apellido materno, el roll y el estatus del Usuario para hacer una Busqueda, se usa Like para ello")
     @PostMapping("busqueda")
     public ResponseEntity UsuarioBusqueda(@RequestBody UsuarioDireccion usuarioBusqueda) {
         try {
@@ -433,6 +733,10 @@ public class UsuarioRestController {
         }
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Documento validado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Error en el proceso de validacion del documento")})
+    @Operation(summary = "Recibe un Archivo TXT ó XSLX y se hace verifica el estado del archivo ademas de la informacion contenida, despues de ello envia un archivo log encriptado al usuairo que contienen informacion como la direccion de donde se guarda, true/false, la fecha de creacion y un comentario")
     @PostMapping("cargaMasiva")
     public ResponseEntity cargaMasiva(@RequestParam("archivo") MultipartFile archivo) throws IOException, NoSuchAlgorithmException, Exception {
 
@@ -472,6 +776,10 @@ public class UsuarioRestController {
         return new ResponseEntity<>("El archivo está vacío", HttpStatus.BAD_REQUEST);
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Se insertanos todos los Usuarios y Direcciones"),
+        @ApiResponse(responseCode = "404", description = "Error al Insertar los Usuarios y Direcciones")})
+    @Operation(summary = "Se hace la inserción de diferentes Usuarios y Direcciones contenido en el Archivo TXT ó XLSX, se actualiza la informacion del aricho log")
     @GetMapping("cargaMasiva/Procesar")
     public ResponseEntity AddUsuarioDireccionMasiva(@RequestParam("encriptado") String encriptado) throws IOException, NoSuchAlgorithmException, Exception {
         final String claveEncriptacion = "¡secreto!";

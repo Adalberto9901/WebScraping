@@ -21,7 +21,7 @@ public class Colonia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idcolonia")
-    private int IdColonia;
+    private int idColonia;
     
     @Column(name = "nombrecolonia")
     private String NombreColonia;
@@ -34,11 +34,11 @@ public class Colonia {
     public Municipio municipio;
 
     public int getIdColonia() {
-        return IdColonia;
+        return idColonia;
     }
 
     public void setIdColonia(int IdColonia) {
-        this.IdColonia = IdColonia;
+        this.idColonia = IdColonia;
     }
 
     public String getNombreColonia() {
