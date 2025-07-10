@@ -123,9 +123,12 @@ public class UsuarioRestController {
     @Operation(summary = "Muestra todos los Usuarios junto con sus Direcciones, que no tienen baja logica de forma ascendente")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Muestra todos los UsuarioDireccion",
-    content = { @Content(mediaType = "application/json",
-      schema = @Schema(implementation = UsuarioDireccion.class)) }),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar todos los UsuarioDireccion")})
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDireccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar todos los UsuarioDireccion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @GetMapping
     public ResponseEntity GetAll() {
         try {
@@ -153,17 +156,23 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra correctamente un solo UsuarioDireccion"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar un solo UsuarioDireccion")})
+        @ApiResponse(responseCode = "200", description = "Muestra correctamente un solo UsuarioDireccion",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDireccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar un solo UsuarioDireccion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra al Usuairo y su(s) Direccion(es), que no sean baja logica")
     @GetMapping("{idUsuario}")
     public ResponseEntity GetById(@PathVariable int idUsuario) {
@@ -185,20 +194,31 @@ public class UsuarioRestController {
             }
             result.correct = true;
             if (result.correct) {
-                return ResponseEntity.ok().body(result);
+               if (result.object== null) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
+                } else {
+                    return ResponseEntity.ok().body(result);
+                }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra correctamente Usuario"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar Usuario")})
+        @ApiResponse(responseCode = "200", description = "Muestra correctamente Usuario",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Usuario.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Usuario"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra solo la informacion perteniecinete del Usuario")
     @GetMapping("soloUsuario/{idUsuario}")
     public ResponseEntity UsuarioGetSolo(@PathVariable int idUsuario) {
@@ -217,20 +237,30 @@ public class UsuarioRestController {
 
             result.correct = true;
             if (result.correct) {
-                return ResponseEntity.ok().body(result);
-
+                if (result.object== null) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
+                } else {
+                    return ResponseEntity.ok().body(result);
+                }
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra correctamente Direccion"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar la Direccion")})
+        @ApiResponse(responseCode = "200", description = "Muestra correctamente Direccion",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Direccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar la Direccion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra solo la informacion perteneciente a la Direccion el cual esta relacionado a un Usuario de forma ascendente")
     @GetMapping("direccion/{idDireccion}")
     public ResponseEntity DireccionGetById(@PathVariable int idDireccion) {
@@ -249,20 +279,31 @@ public class UsuarioRestController {
 
             result.correct = true;
             if (result.correct) {
-                return ResponseEntity.ok().body(result);
-
+                if (result.object== null) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Sin información");
+                } else {
+                    return ResponseEntity.ok().body(result);
+                }
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "UsuarioDireccion agregado correcetamente"),
-        @ApiResponse(responseCode = "404", description = "Error al nisertar UsuarioDireccion")})
+        @ApiResponse(responseCode = "200", description = "UsuarioDireccion agregado correcetamente",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDireccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al nisertar UsuarioDireccion"),
+        @ApiResponse(responseCode = "409", description = "Restriccion unica violada, cambie la informacion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Agrega la informacion del Usuario y la Direccion con la que se esta agregando")
     @PostMapping
     public ResponseEntity AddUsuarioDireccion(@RequestBody UsuarioDireccion usuarioDireccion) {
@@ -292,21 +333,34 @@ public class UsuarioRestController {
                 result.errorMasassge = ex.getLocalizedMessage();
                 result.ex = ex;
             }
+            int indice = result.errorMasassge.indexOf("unique");
+
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
+            } else if (indice == -1) {
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(409)).body("Restriccion unica violada, cambie la informacion");
+
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Direccion agregada correctamente"),
-        @ApiResponse(responseCode = "404", description = "Error al insertar la Direccion")})
+        @ApiResponse(responseCode = "200", description = "Direccion agregada correctamente",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Direccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al insertar la Direccion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Se Agrega una Direccon a un Usuario existente y cuya Id se utiliza para relacionar la Direccion nueva con el Usuario deseado")
     @PostMapping("direccion/{idUsuario}")
     public ResponseEntity AddDireccionByUsuario(@PathVariable int idUsuario, @RequestBody UsuarioDireccion usuarioDireccion) {
@@ -337,17 +391,29 @@ public class UsuarioRestController {
                 return ResponseEntity.ok().body(result);
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Update correcto de Usuario"),
-        @ApiResponse(responseCode = "404", description = "Error al actualizar el Usuario")})
+        @ApiResponse(responseCode = "200", description = "Update correcto de Usuario",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Usuario.class))}),
+        @ApiResponse(responseCode = "201", description = "Seguardo un nuevo Usuario",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Usuario.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al actualizar el Usuario"),
+        @ApiResponse(responseCode = "409", description = "Restriccion unica violada, cambie la informacion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Actualiza la informacion del Usuario en base al Id que se este trabajando, que sea exitente y que no sea una baja logica, sin afectar la informacion de las Direcciones que esten relaciondas")
     @PutMapping("{idUsuario}")
     public ResponseEntity UpdateUsuario(@PathVariable int idUsuario, @RequestBody UsuarioDireccion usuarioDireccion) {
@@ -373,21 +439,38 @@ public class UsuarioRestController {
                 result.errorMasassge = ex.getLocalizedMessage();
                 result.ex = ex;
             }
+            int indice = result.errorMasassge.indexOf("unique");
+
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
+            } else if (indice == -1) {
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(409)).body("Restriccion unica violada, cambie la informacion");
+
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Update correcto de Direccion"),
-        @ApiResponse(responseCode = "404", description = "Error al actulizar la Direccion")})
+        @ApiResponse(responseCode = "200", description = "Update correcto de Direccion",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Direccion.class))}),
+        @ApiResponse(responseCode = "201", description = "Se creo una nuava Direccion",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Direccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al actulizar la Direccion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Actualiza la informacion de la Direccion en base al Id del que se este trabajando y sin afecatar la informacion del Usuario que este relacionada")
     @PutMapping("direccion/{idDireccion}")
     public ResponseEntity UpdateDireccinoByUsuario(@PathVariable int idDireccion, @RequestBody UsuarioDireccion usuarioDireccion) {
@@ -412,21 +495,29 @@ public class UsuarioRestController {
                 result.errorMasassge = ex.getLocalizedMessage();
                 result.ex = ex;
             }
+
             if (result.correct) {
                 return ResponseEntity.ok().body(result);
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Elimancion correcta de Usuario"),
-        @ApiResponse(responseCode = "404", description = "Error al eliminar el Usuario")})
+        @ApiResponse(responseCode = "200", description = "Elimancion correcta de Usuario",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Usuario.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al eliminar el Usuario"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Hace una baja logica del Usuario en base al Id para no perder dicha informacion ademas que no se muetra en la vista general")
     @DeleteMapping("{idUsuario}")
     public ResponseEntity DeleteUsuarioDireccion(@PathVariable int idUsuario) {
@@ -455,17 +546,24 @@ public class UsuarioRestController {
                 return ResponseEntity.ok().body(result);
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Eliminacion correcta de Direccion"),
-        @ApiResponse(responseCode = "404", description = "Error al eliminar la Direccion")})
+        @ApiResponse(responseCode = "200", description = "Eliminacion correcta de Direccion",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Direccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al eliminar la Direccion"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Hace una baja logica de Direccion en base al Id para mantener la informacion ademas que no se muestra en la vista de detalles")
     @DeleteMapping("direccion/{idDireccion}")
     public ResponseEntity DeleteDireccionByUsuario(@PathVariable("idDireccion") int idDireccion) {
@@ -494,17 +592,24 @@ public class UsuarioRestController {
                 return ResponseEntity.ok().body(result);
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muesta todos los Rolles"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar Roll")})
+        @ApiResponse(responseCode = "200", description = "Muesta todos los Rolles",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Roll.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Roll"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muetra todos los Rolles en orden asendente")
     @GetMapping("roll")
     public ResponseEntity GetAllRoll() {
@@ -529,17 +634,24 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra todos los Paises"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar Pais")})
+        @ApiResponse(responseCode = "200", description = "Muestra todos los Paises",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Pais.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Pais"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra todos los Paises en forma ascendente")
     @GetMapping("pais")
     public ResponseEntity GetAllPais() {
@@ -563,17 +675,24 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra los Estados relacionados"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar Estado")})
+        @ApiResponse(responseCode = "200", description = "Muestra los Estados relacionados",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Estado.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Estado"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra los Estados relacionados con el Id del Pais")
     @GetMapping("estado/{idPais}")
     public ResponseEntity EstadoGetById(@PathVariable int idPais) {
@@ -596,17 +715,24 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra los Municipios relacionados"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar Municipio")})
+        @ApiResponse(responseCode = "200", description = "Muestra los Municipios relacionados",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Municipio.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar Municipio"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra los Municipios relacionados con el Id del Estado")
     @GetMapping("municipio/{idEstado}")
     public ResponseEntity MunicipioGetById(@PathVariable int idEstado) {
@@ -629,17 +755,24 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Muestra las Colonias relacionadas"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar la Colonia")})
+        @ApiResponse(responseCode = "200", description = "Muestra las Colonias relacionadas",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Colonia.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar la Colonia"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Muestra las Colonias relacionados con el Id del Municipio")
     @GetMapping("colonia/{idMunicipio}")
     public ResponseEntity ColoniaGetById(@PathVariable int idMunicipio) {
@@ -662,17 +795,24 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Modificacion del Estatus del Usuario"),
-        @ApiResponse(responseCode = "404", description = "Error al modificar el estaus del Usuario")})
+        @ApiResponse(responseCode = "200", description = "Modificacion del Estatus del Usuario",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Usuario.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al modificar el estaus del Usuario"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Modifica el Estatus del Usuario que recibe por medio de la URL el cual es 0 para inactivo o 1 para activo")
     @GetMapping("estatus")
     public ResponseEntity EstatusUsuario(@RequestParam int IdUsuario, @RequestParam int ActivoUsuario) {
@@ -701,17 +841,24 @@ public class UsuarioRestController {
                 return ResponseEntity.ok().body(result);
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Busqueda dinamica correcta"),
-        @ApiResponse(responseCode = "404", description = "Error al Recuperar la informacion de la busqueda")})
+        @ApiResponse(responseCode = "200", description = "Busqueda dinamica correcta",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDireccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Recuperar la informacion de la busqueda"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Recibe parametros de nombre, apellido paterno, apellido materno, el roll y el estatus del Usuario para hacer una Busqueda, se usa Like para ello")
     @PostMapping("busqueda")
     public ResponseEntity UsuarioBusqueda(@RequestBody UsuarioDireccion usuarioBusqueda) {
@@ -725,17 +872,24 @@ public class UsuarioRestController {
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
             }
 
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+//            return ResponseEntity.status(HttpStatus.valueOf(500)).body(ex.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(500)).body("Internal Error Server");
         }
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Documento validado correctamente"),
-        @ApiResponse(responseCode = "404", description = "Error en el proceso de validacion del documento")})
+        @ApiResponse(responseCode = "200", description = "Documento validado correctamente",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDireccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error en el proceso de validacion del documento"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Recibe un Archivo TXT ó XSLX y se hace verifica el estado del archivo ademas de la informacion contenida, despues de ello envia un archivo log encriptado al usuairo que contienen informacion como la direccion de donde se guarda, true/false, la fecha de creacion y un comentario")
     @PostMapping("cargaMasiva")
     public ResponseEntity cargaMasiva(@RequestParam("archivo") MultipartFile archivo) throws IOException, NoSuchAlgorithmException, Exception {
@@ -771,14 +925,21 @@ public class UsuarioRestController {
                 return ResponseEntity.ok().body(result);
             } else {
                 return ResponseEntity.status(HttpStatus.valueOf(400)).body(listaErrores);
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body("Internal Error Server");
             }
         }
         return new ResponseEntity<>("El archivo está vacío", HttpStatus.BAD_REQUEST);
     }
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se insertanos todos los Usuarios y Direcciones"),
-        @ApiResponse(responseCode = "404", description = "Error al Insertar los Usuarios y Direcciones")})
+        @ApiResponse(responseCode = "200", description = "Se insertanos todos los Usuarios y Direcciones",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDireccion.class))}),
+        @ApiResponse(responseCode = "404", description = "Error al Insertar los Usuarios y Direcciones"),
+        @ApiResponse(responseCode = "409", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "400", description = "La operacion no se completo correctamente, intentelo mas tarde"),
+        @ApiResponse(responseCode = "500", description = "Internal Error Server")})
     @Operation(summary = "Se hace la inserción de diferentes Usuarios y Direcciones contenido en el Archivo TXT ó XLSX, se actualiza la informacion del aricho log")
     @GetMapping("cargaMasiva/Procesar")
     public ResponseEntity AddUsuarioDireccionMasiva(@RequestParam("encriptado") String encriptado) throws IOException, NoSuchAlgorithmException, Exception {
@@ -805,6 +966,7 @@ public class UsuarioRestController {
                         List<ResultValidarDatos> listaErrores = resultValidarDatos(usuariosDireccion);
                         if (listaErrores.isEmpty()) {
                             Result result = UsuarioJPADAOImplementation.Add(usuariosDireccion);
+                            int indice = result.errorMasassge.indexOf("unique");
                             if (result.correct) {
                                 String comentario = "el documento subido correctamente";
                                 FileWriter writer = new FileWriter(archivo, true);
@@ -814,11 +976,17 @@ public class UsuarioRestController {
                                 writer.close();
                                 return ResponseEntity.ok().body(result);
 
+                            } else if (indice == -1) {
+//                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                                return ResponseEntity.status(HttpStatus.valueOf(409)).body("Restriccion unica violada, cambie la informacion");
+
                             } else {
-                                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+//                                return ResponseEntity.status(HttpStatus.valueOf(400)).body(result);
+                                return ResponseEntity.status(HttpStatus.valueOf(400)).body("La operacion no se completo correctamente, intentelo mas tarde");
                             }
                         } else {
                             return ResponseEntity.status(HttpStatus.valueOf(400)).body(listaErrores);
+//                            return ResponseEntity.status(HttpStatus.valueOf(400)).body("Internal Error Server");
                         }
                     }
                 } else {

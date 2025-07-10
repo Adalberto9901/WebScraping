@@ -1,0 +1,2 @@
+nombre|apellidoPaterno|apellidoMaterno|FechaNacimeintoUsuario|SexoUsuario|CorreoUsuario|CelularUsuario|PasswordUsuario|TelefonoUsuario|UserNombreUsuario|UsuarioRoll|Calle|NumInterior|NumExterior|IdColonia
+Clara| Del Norte|Mar|2001-02-02|M|Clara.delNorte@gmail.com|55-2648-4654|delNorteClara|52-8797-6454|ClaradelNorte|2|Avenida Venustiano Carranza|684|654|10

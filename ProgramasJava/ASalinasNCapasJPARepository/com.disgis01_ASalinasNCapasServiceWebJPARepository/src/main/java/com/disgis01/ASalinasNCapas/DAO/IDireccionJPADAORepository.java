@@ -16,10 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface IDireccionJPADAORepository extends JpaRepository<Direccion, Integer> {
 
-//    public Optional<Direccion> findAllById(int idUsuario);
     List<Direccion> findByUsuario_IdUsuario(Integer idUsuario);
-//    Usuario usuario = IUsuarioJPADAORepository.findById();
-//    List<Direccion> findByUsuarioId(Integer idUsuario);
 
     public List<Direccion> findAllByIdDireccion(int idDireccion);
 
