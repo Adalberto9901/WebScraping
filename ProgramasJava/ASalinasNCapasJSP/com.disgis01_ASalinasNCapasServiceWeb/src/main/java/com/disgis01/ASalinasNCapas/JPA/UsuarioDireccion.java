@@ -15,6 +15,24 @@ public class UsuarioDireccion {
     public Direccion Direccion;
     public List<Direccion> Direcciones;
 
+    public UsuarioDireccion() {
+    }
+    
+    public UsuarioDireccion(Usuario Usuario) {
+        this.Usuario = Usuario;
+    }
+    
+    public UsuarioDireccion(Usuario Usuario, Direccion Direccion) {
+        this.Usuario = Usuario;
+        this.Direccion = Direccion;
+    }
+    
+    public UsuarioDireccion(Usuario Usuario, Direccion Direccion, List<Direccion> Direcciones) {
+        this.Usuario = Usuario;
+        this.Direccion = Direccion;
+        this.Direcciones = Direcciones;
+    }
+    
     public Usuario getUsuario() {
         return Usuario;
     }

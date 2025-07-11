@@ -172,6 +172,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
 
         try {
             Usuario usuarioJPA = entityManager.find(Usuario.class, usuarioDireccion.Usuario.getIdUsuario());
+//            Usuario usuarioJPA = usuarioDireccion.Usuario;
 
             if (usuarioJPA != null) {
                 usuarioJPA.setNombreUsuario(usuarioDireccion.Usuario.getNombreUsuario());
@@ -212,6 +213,8 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
 
         try {
             Usuario usuarioJPA = entityManager.find(Usuario.class, idUsuario);
+//              Usuario usuarioJPA = new Usuario();
+//              usuarioJPA.setIdUsuario(idUsuario);
 
             if (usuarioJPA != null) {
                 usuarioJPA.setActivoUsuario(0);
@@ -235,7 +238,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
         Result result = new Result();
 //        result.objects = new ArrayList<>();
         try {
-            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE IdUsuario = :idUsuario", Usuario.class);
+            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario WHERE IdUsuario = :idUsuario", Usuario.class);
             UsuarioQuery.setParameter("idUsuario", idUsuario);
             List<Usuario> usuariosJPA = UsuarioQuery.getResultList();
 
@@ -267,7 +270,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
     public Result UsuarioGetSolo(int idUsuario) {
         Result result = new Result();
         try {
-            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE IdUsuario = :idUsuario", Usuario.class);
+            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario WHERE IdUsuario = :idUsuario", Usuario.class);
             UsuarioQuery.setParameter("idUsuario", idUsuario);
             Usuario usuarioJPA = UsuarioQuery.getSingleResult();
 

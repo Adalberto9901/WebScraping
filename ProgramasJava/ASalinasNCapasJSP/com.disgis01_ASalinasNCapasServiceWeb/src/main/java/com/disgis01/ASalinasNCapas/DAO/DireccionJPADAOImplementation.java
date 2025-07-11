@@ -76,7 +76,9 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
         Result result = new Result();
 
         try {
-            Direccion direccionJPA = entityManager.find(Direccion.class, usuarioDireccion.Direccion.getIdDireccion());
+//            Direccion direccionJPA = entityManager.find(Direccion.class, usuarioDireccion.Direccion.getIdDireccion());
+            Direccion direccionJPA = new Direccion();
+            direccionJPA.setIdDireccion(usuarioDireccion.Direccion.getIdDireccion());
 
             if (direccionJPA != null) {
                 direccionJPA.setCalle(usuarioDireccion.Direccion.getCalle());
@@ -85,8 +87,10 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
 
                 Colonia colonia = entityManager.find(Colonia.class, usuarioDireccion.Direccion.Colonia.getIdColonia());
                 direccionJPA.Colonia = new Colonia();
+//                direccionJPA.Colonia.setIdColonia(direccionJPA.Colonia.getIdColonia());
                 direccionJPA.Colonia.setIdColonia(colonia.getIdColonia());
 
+                entityManager.merge(direccionJPA);
                 result.correct = true;
             } else {
                 result.correct = false;
@@ -108,6 +112,8 @@ public class DireccionJPADAOImplementation implements IDireccionJPADAO {
         try {
 
             Direccion direccionJPA = entityManager.find(Direccion.class, idDireccion);
+//            Direccion direccionJPA = new Direccion();
+//            direccionJPA.setIdDireccion(idDireccion);
 
             if (direccionJPA != null) {
                 direccionJPA.setActivoDireccion(0);

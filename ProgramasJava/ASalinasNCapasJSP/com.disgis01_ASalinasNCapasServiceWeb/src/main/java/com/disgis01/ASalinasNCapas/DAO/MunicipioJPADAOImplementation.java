@@ -28,7 +28,7 @@ public class MunicipioJPADAOImplementation implements IMunicipioJPADAO{
         Result result = new Result();
 
         try {
-            TypedQuery<Municipio> MunicipioQuery = entityManager.createQuery("FROM Municipio WHERE  Estado.IdEstado = :idEstado order by id ASC",Municipio.class);
+            TypedQuery<Municipio> MunicipioQuery = entityManager.createQuery("FROM Municipio WHERE Estado.IdEstado = :idEstado order by id ASC",Municipio.class);
             MunicipioQuery.setParameter("idEstado", idEstado);
             List<Municipio> municpios = MunicipioQuery.getResultList();
             result.objects = new ArrayList<>();
