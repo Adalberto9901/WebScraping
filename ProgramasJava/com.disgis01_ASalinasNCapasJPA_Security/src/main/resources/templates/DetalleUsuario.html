@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <style>
+
+            body{
+                background-color:  #c7ceb9;
+            }
+
+        </style>
+    </head>
+    <body layout:fragment="body">
+
+        <div class="container mt-6">
+            <div class="row">
+
+                <div class="col-md-5 text-center">
+                    <div class="row">
+                        <div class="col-md-6 text-center">
+                            <a th:href="@{/usuario/RedireccionarFormulario?idUsuario=} +${usuarioDireccion.usuario.IdUsuario+'&IdDireccion=-1'}">
+                                <button class="btn btn-primary" >
+                                    <i class="bi bi-person-gear"></i>
+                                    Editar Usuario
+                                </button>
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <a th:href="@{/usuario/RedireccionarFormulario?idUsuario=} +${usuarioDireccion.usuario.IdUsuario}+'&IdDireccion=0' ">
+                                <button class="btn btn-warning " >
+                                    <i class="bi bi-house-add"></i>
+                                    Agregar Direccion
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Imagen -->
+                    <div class="text-center"> 
+                        <p class="lead border border-primary rounded-pill px-4 py-2 text-center d-inline-block" th:text="|Id: ${usuarioDireccion.usuario.IdUsuario}|" th:attr="data-id=${usuarioDireccion.usuario.IdUsuario}" id="ddlidUsuario"></p>
+                        <br>
+                        <image  th:src="${usuarioDireccion.usuario.Imagen == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png': 'data:image/png;base64,'+ ${usuarioDireccion.usuario.Imagen}" class="img-fluid mb-2">
+                    </div>
+
+                    <!-- Información debajo de la imagen, separada -->
+                    <div class="text-center mt-4">
+                        <p class="lead border border-primary rounded-pill px-4 py-2 text-center d-inline-block" th:text="|Nombre: ${usuarioDireccion.usuario.NombreUsuario} ${usuarioDireccion.usuario.ApellidoPatUsuario} ${usuarioDireccion.usuario.ApellidoMatUsuario}|"></p>
+                        <p class="lead border border-primary rounded-pill px-4 py-2 text-center d-inline-block" th:text="|Correo: ${usuarioDireccion.usuario.CorreoUsuario} Celular: ${usuarioDireccion.usuario.CelularUsuario} Telefono: ${usuarioDireccion.usuario.TelefonoUsuario}|"></p>
+                        <p class="lead border border-primary rounded-pill px-4 py-2 text-center d-inline-block" th:text="|Rol: ${usuarioDireccion.usuario.Roll.NombreRoll}|"></p>
+                    </div>
+
+                </div>
+
+                <div class="col-md-7">
+                    <table class="table table-striped-columns  table-hover table-striped table-responsive">
+                        <thead >
+                            <tr>
+                                <th scope="col">Direccion</th>
+                                <th scope="col">Editar</th>
+                                <th scope="col">Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-dark" >
+                            <tr  th:each="direccion : ${usuarioDireccion.Direcciones}" >
+                                <td>
+                                    <ul>
+                                        <!--
+                                        th:each="Direccion : ${usuarioDireccion.Direccion}"  => se extrae el id de la direccion para poder editarla mas adelante en el formulario
+                                        -->
+                                        <li th:attr="data-id=${direccion.IdDireccion}" id="ddlidUsuario"
+                                            th:text=
+                                            "${direccion.Calle} == null ? 'No tiene direccion' : |${direccion.Calle}
+                                            ${direccion.NumeroInterior} 
+                                            ${direccion.NumeroExterior}, 
+                                            ${direccion.Colonia.NombreColonia}  
+                                            ${direccion.Colonia.CodigoPostal}, 
+                                            ${direccion.Colonia.Municipio.NombreMunicipio},
+                                            ${direccion.Colonia.Municipio.Estado.NombreEstado}, 
+                                            ${direccion.Colonia.Municipio.Estado.Pais.NombrePais}|"
+                                            >
+
+                                        </li>
+                                    </ul>
+                                </td>
+
+                                <td>
+                                    <!--boton para editar-->
+                                    <a th:href="@{/usuario/RedireccionarFormulario?idUsuario=} +${usuarioDireccion.usuario.IdUsuario} +'&IdDireccion='+${direccion.IdDireccion}"
+                                       >
+                                        <button class="btn btn-outline-warning " >
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>
+                                    <!--boton para eliminar-->
+                                    <a th:href="@{/usuario/deleteAddress?idUsuario=} +${usuarioDireccion.usuario.IdUsuario} +'&IdDireccion='+${direccion.IdDireccion}"
+                                       >
+                                        <button class="btn btn-outline-danger">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>
