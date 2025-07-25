@@ -40,23 +40,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 Ingresar
                             </button>
                         </td>
-                    </tr>
-                </table>
-            </form>
-            <form name='formLogout' th:action="@{/logout}" method='POST'>
-                <table>
-                    <tr>
-                        <td>
-                            <button type="submit" class="btn btn-dark" id="Login">
-                                Cerrar sesión
-                            </button>
-                        </td>
-                    <div  class="text-success mb-3 " th:if="${param.logout}"> 
+                         <div  class="text-success mb-3 " th:if="${param.logout}"> 
                         Sesión cerrada correctemente.
                     </div>
                     </tr>
                 </table>
             </form>
+            
 
         </div>
 

@@ -33,7 +33,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
         Result result = new Result();
 
         try {
-            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario WHERE ActivoUsuario = 1 order by id ASC", Usuario.class);
+            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario WHERE activoUsuario = 1 order by id ASC", Usuario.class);
             List<Usuario> usuarios = UsuarioQuery.getResultList();
             result.objects = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
                 usuarioDireccion.usuario.Roll.setNombreRoll(usuarioJPA.Roll.getNombreRoll());
 
-                TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.IdUsuario = :idusuario AND ActivoDireccion = 1", Direccion.class);
+                TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.idUsuario = :idusuario AND ActivoDireccion = 1", Direccion.class);
                 direccionesQuery.setParameter("idusuario", usuarioJPA.getIdUsuario());
                 List<Direccion> direccionesJPA = direccionesQuery.getResultList();
 
@@ -277,7 +277,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
     public Result GetById(int idUsuario) {
         Result result = new Result();
         try {
-            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE IdUsuario = :idUsuario", Usuario.class);
+            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE idUsuario = :idUsuario", Usuario.class);
             UsuarioQuery.setParameter("idUsuario", idUsuario);
             Usuario usuarioJPA = UsuarioQuery.getSingleResult();
 
@@ -304,7 +304,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
                 usuarioDireccion.usuario.Roll.setNombreRoll(usuarioJPA.Roll.getNombreRoll());
 
-                TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.IdUsuario = :idusuario AND ActivoDireccion = 1", Direccion.class);
+                TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.idUsuario = :idusuario AND ActivoDireccion = 1", Direccion.class);
                 direccionesQuery.setParameter("idusuario", usuarioJPA.getIdUsuario());
                 List<Direccion> direccionesJPA = direccionesQuery.getResultList();
 
@@ -355,7 +355,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
     public Result UsuarioGetSolo(int idUsuario) {
         Result result = new Result();
         try {
-            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE IdUsuario = :idUsuario", Usuario.class);
+            TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery("FROM Usuario  WHERE idUsuario = :idUsuario", Usuario.class);
             UsuarioQuery.setParameter("idUsuario", idUsuario);
             Usuario usuarioJPA = UsuarioQuery.getSingleResult();
 
@@ -402,7 +402,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                     + " AND LOWER(ApellidoPatUsuario) LIKE LOWER(:apepaterno) "
                     + "AND LOWER(ApellidoMatUsuario) LIKE LOWER(:apematerno) "
                     + " order by id ASC";
-            Consulta += (usuarioBusqueda.usuario.Roll.getIdRoll() != 0 ? " AND Roll.IdRoll = : idroll" : "");
+            Consulta += (usuarioBusqueda.usuario.Roll.getIdRoll() != 0 ? " AND Roll.idRoll = : idroll" : "");
             TypedQuery<Usuario> UsuarioQuery = entityManager.createQuery(Consulta, Usuario.class);
 
             UsuarioQuery.setParameter("nombreusuario", "%" + usuarioBusqueda.usuario.getNombreUsuario() + "%");
@@ -441,7 +441,7 @@ public class UsuarioJPADAOImplementation implements IUsuarioJPADAO {
                 usuarioDireccion.usuario.Roll.setIdRoll(usuarioJPA.Roll.getIdRoll());
                 usuarioDireccion.usuario.Roll.setNombreRoll(usuarioJPA.Roll.getNombreRoll());
 
-                TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.IdUsuario = :idusuario", Direccion.class);
+                TypedQuery<Direccion> direccionesQuery = entityManager.createQuery("FROM Direccion WHERE Usuario.idUsuario = :idusuario", Direccion.class);
                 direccionesQuery.setParameter("idusuario", usuarioJPA.getIdUsuario());
                 List<Direccion> direccionesJPA = direccionesQuery.getResultList();
 

@@ -19,17 +19,17 @@ public class Roll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idroll")
-    private int IdRoll;
+    private int idRoll;
     
     @Column(name = "nombreroll")
     private String NombreRoll;
 
     public int getIdRoll() {
-        return IdRoll;
+        return idRoll;
     }
 
     public void setIdRoll(int IdRoll) {
-        this.IdRoll = IdRoll;
+        this.idRoll = IdRoll;
     }
 
     public String getNombreRoll() {

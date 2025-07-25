@@ -24,7 +24,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idusuario")
-    private int IdUsuario;
+    private int idUsuario;
     
     @Column(name = "nombreusuario")
     private String NombreUsuario;
@@ -60,7 +60,7 @@ public class Usuario {
 //    @NotEmpty(message = "Ingresa dato :@")
 //    @Pattern(regexp = "[a-zA-Z0-9_]+[#$!%&|°¬]+", message = "contraseña invalida regex")
     @Column(name = "passwordusuario")
-    private String PasswordUsuario;
+    private String passwordUsuario;
 
 //    @Size(min = 3, max = 20, message = "Nombre entre 3 y 20")
 //    @NotEmpty(message = "Ingresa dato :@")
@@ -76,25 +76,25 @@ public class Usuario {
 //    @Size(min = 3, max = 20, message = "Nombre entre 3 y 20")
 //    @NotEmpty(message = "Ingresa dato :@")
     @Column(name = "usernameusuario")
-    private String UserNombreUsuario;
+    private String userNombreUsuario;
     
     @Lob
     @Column(name = "imagen")
     private String Imagen;
     
     @Column(name = "activousuario")
-    private int ActivoUsuario;
+    private int activoUsuario;
 
     @JoinColumn(name = "idroll")
     @ManyToOne
     public Roll Roll; //=> propiedad de navegacion
 
     public int getIdUsuario() {
-        return IdUsuario;
+        return idUsuario;
     }
 
     public void setIdUsuario(int IdUsuario) {
-        this.IdUsuario = IdUsuario;
+        this.idUsuario = IdUsuario;
     }
 
     public String getNombreUsuario() {
@@ -154,11 +154,11 @@ public class Usuario {
     }
 
     public String getPasswordUsuario() {
-        return PasswordUsuario;
+        return passwordUsuario;
     }
 
     public void setPasswordUsuario(String PasswordUsuario) {
-        this.PasswordUsuario = PasswordUsuario;
+        this.passwordUsuario = PasswordUsuario;
     }
 
     public String getTelefonoUsuario() {
@@ -178,11 +178,11 @@ public class Usuario {
     }
 
     public String getUserNombreUsuario() {
-        return UserNombreUsuario;
+        return userNombreUsuario;
     }
 
     public void setUserNombreUsuario(String UserNombreUsuario) {
-        this.UserNombreUsuario = UserNombreUsuario;
+        this.userNombreUsuario = UserNombreUsuario;
     }
 
     public String getImagen() {
@@ -194,11 +194,11 @@ public class Usuario {
     }
 
     public int getActivoUsuario() {
-        return ActivoUsuario;
+        return activoUsuario;
     }
 
     public void setActivoUsuario(int ActivoUsuario) {
-        this.ActivoUsuario = ActivoUsuario;
+        this.activoUsuario = ActivoUsuario;
     }
 
     public Roll getRoll() {

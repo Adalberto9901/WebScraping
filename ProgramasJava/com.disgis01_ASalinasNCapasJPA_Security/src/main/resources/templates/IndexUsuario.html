@@ -5,7 +5,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout}"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
     <head>
         <style>
 
@@ -16,6 +17,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </style>
     </head>
     <body layout:fragment="body">
+        
+        <div class="container">
+            <div class="row">
+                <div sec:authorize="isAuthenticated()" class="col-md-4 offset-md-4">
+                    <h1> Bienvenido <span sec:authentication="name"></span>, tu rol es <span sec:authentication="principal.authorities"></span> </h1> 
+                </div>
+            </div>
+        </div>
+
         <div class="container">
             <form class="row g-3" id="formUsuario" name="formUsuario" method="post" th:object="${usuarioDireccion}" th:action="@{/usuario/index}" >
 
@@ -49,7 +59,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                             <input class="form-check-input" type="checkbox" id="CheckActivo" th:field="*{Usuario.ActivoUsuario}" value=0>
                                             <label class="form-check-label" id="Activo" >Actividad del Usuario</label>
                                         </div>-->
-                    
+
 
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="CheckActivo" 
@@ -65,22 +75,38 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </div>
             </form>
 
-            <div class="col-12" >
-                <button class="btn btn-outline-dark " id="mostrarBuscar" name="mostrarBuscar">
-                    <i class="bi bi-bing"></i>
-                    Buscador
-                </button>
-            </div>
             <table class="table table-striped-columns  table-hover table-striped table-responsive">
                 <thead >
                     <tr>
-                        <th scope="col">
+                        <th scope="col" sec:authorize="hasAnyAuthority('Programador', 'Analista')">
                             <a th:href="@{/usuario/addUser/0}">
-                                <button class="btn btn-outline-primary" >
+                                <button class="btn btn-primary" >
                                     <i class="bi bi-person-fill-add"></i>
                                     Usuario
                                 </button>
                             </a>
+                        </th>
+                        <th scope="col" sec:authorize="hasAuthority('Programador')">
+                            <div class="col-12" >
+                                <button class="btn btn-success " id="mostrarBuscar" name="mostrarBuscar"><!-- "-outline" -->
+                                    <i class="bi bi-bing"></i>
+                                    Buscador
+                                </button>
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <form name='formLogout' th:action="@{/logout}" method='POST'>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button type="submit" class="btn btn-dark" id="Login">
+                                                Cerrar sesión
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </form>
                         </th>
                     </tr> 
                     <tr>
@@ -90,8 +116,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <th scope="col">Contacto</th>
                         <th scope="col">Direccion</th>
                         <th scope="col">Roll</th>
-                        <th scope="col">Editar</th>
-                        <th scope="col">Eliminar</th>
+                        <th scope="col" sec:authorize="hasAnyAuthority('Programador', 'Analista')">Editar</th>
+                        <th scope="col" sec:authorize="hasAuthority('Programador')">Eliminar</th>
                     </tr>
                 </thead>
                 <tbody class="table-dark" >
@@ -132,7 +158,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </td>
 
                         <td th:text="${usuarioDireccion.usuario.Roll.NombreRoll}" ></td>
-                        <td>
+                        
+                        <td sec:authorize="hasAnyAuthority('Programador', 'Analista')">
                             <!--boton para editar-->
                             <a th:href="@{'/usuario/addUser/' + ${usuarioDireccion.usuario.IdUsuario} }">
                                 <button class="btn btn-outline-warning " id="btnEditar">
@@ -140,7 +167,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 </button>
                             </a>
                         </td>
-                        <td>
+                        <td sec:authorize="hasAuthority('Programador')">
                             <!--boton para eliminar-->
                             <a th:href="@{'/usuario/deleteUser/' + ${usuarioDireccion.usuario.IdUsuario}  }">
                                 <!--${usuarioDireccion.Direccion.idDireccion}-->

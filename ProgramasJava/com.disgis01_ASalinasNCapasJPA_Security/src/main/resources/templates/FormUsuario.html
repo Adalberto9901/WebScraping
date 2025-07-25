@@ -134,7 +134,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <option th:each="roll : ${rolles}" th:value="${roll.IdRoll}" th:text="${roll.NombreRoll}" ></option>
                         </select>
                     </div>
-                    <div class="form-check form-switch " th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == -1)}">
+                    <div class="form-check form-switch " th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == -1)}" sec:authorize="hasAuthority('Programador')">
                         <input class="form-check-input" type="checkbox" id="CheckActivo"  th:field="*{Usuario.ActivoUsuario}" th:value="*{Usuario.ActivoUsuario}">
                         <label class="form-check-label" id="Activo" >Actividad del Usuario</label>
                     </div>
@@ -194,25 +194,25 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </select>
                     </div>
                 </div>
-                <div class="col-12" th:if="*{ (usuario.IdUsuario == 0 && Direccion.IdDireccion == 0) }">
+                <div class="col-12" th:if="*{ (usuario.IdUsuario == 0 && Direccion.IdDireccion == 0) }" sec:authorize="hasAuthority('Programador')">
                     <button type="submit" class="btn btn-outline-primary" id="AddUser">
                         <i class="bi bi-person-plus"></i>
                         Agregar Usuario
                     </button>
                 </div>
-                <div class="col-12" th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == -1) }">
+                <div class="col-12" th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == -1) }" sec:authorize="hasAuthority('Programador')">
                     <button class="btn btn-outline-warning" id="UpdateUser">
                         <i class="bi bi-person-plus"></i>
                         Actualizar Usuario
                     </button>
                 </div>
-                <div class="col-12" th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == 0) }">
+                <div class="col-12" th:if="*{ (usuario.IdUsuario > 0 && Direccion.IdDireccion == 0) }" sec:authorize="hasAuthority('Programador')">
                     <button class="btn btn-outline-primary" id="AddAddress">
                         <i class="bi bi-house-add"></i>
                         Agregar Direccion
                     </button>
                 </div>
-                <div class="col-12" th:if="*{ (usuario.IdUsuario >0 && Direccion.IdDireccion > 0) }">
+                <div class="col-12" th:if="*{ (usuario.IdUsuario >0 && Direccion.IdDireccion > 0) }"sec:authorize="hasAuthority('Programador')">
                     <button class="btn btn-outline-warning" id="UpdateAddress">
                         <i class="bi bi-house-gear"></i>
                         Actualizar Direccion

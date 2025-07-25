@@ -61,8 +61,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <thead >
                             <tr>
                                 <th scope="col">Direccion</th>
-                                <th scope="col">Editar</th>
-                                <th scope="col">Eliminar</th>
+                                <th scope="col" sec:authorize="hasAnyAuthority('Programador', 'Analista')">Editar</th>
+                                <th scope="col" sec:authorize="hasAuthority('Programador')">Eliminar</th>
                             </tr>
                         </thead>
                         <tbody class="table-dark" >
@@ -88,7 +88,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     </ul>
                                 </td>
 
-                                <td>
+                                <td sec:authorize="hasAnyAuthority('Programador', 'Analista')">
                                     <!--boton para editar-->
                                     <a th:href="@{/usuario/RedireccionarFormulario?idUsuario=} +${usuarioDireccion.usuario.IdUsuario} +'&IdDireccion='+${direccion.IdDireccion}"
                                        >
@@ -97,7 +97,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         </button>
                                     </a>
                                 </td>
-                                <td>
+                                <td sec:authorize="hasAuthority('Programador')">
                                     <!--boton para eliminar-->
                                     <a th:href="@{/usuario/deleteAddress?idUsuario=} +${usuarioDireccion.usuario.IdUsuario} +'&IdDireccion='+${direccion.IdDireccion}"
                                        >
