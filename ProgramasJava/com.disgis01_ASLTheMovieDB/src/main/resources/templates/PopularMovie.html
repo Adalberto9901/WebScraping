@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <style>
+
+            body{
+                background-color:  #c7ceb9;
+            }
+
+        </style>
+    </head>
+    <body layout:fragment="body">
+        <h1>BIENVENIDO AL Popular Movie </h1>
+        <div class="container">
+            <!--<input type="hidden" th:text="">-->
+            <div class="row fw-bold border-bottom py-2">
+                <div class="col">ID</div>
+                <div class="col">Imagen</div>
+                <div class="col">Nombre</div>
+                <div class="col">Contacto</div>
+                <div class="col">Roll</div>
+            </div>
+
+            <div class="row border-bottom py-2 align-items-center" th:each="pelicula : ${peliculas}">
+                <div class="col" 
+                     th:text="${pelicula.id}" 
+                     th:attr="data-id=${pelicula.id}" 
+                     id="ddlidPelicula">
+                </div>
+
+                <div class="col">
+                    <div class="row">
+                        <img style="width: 100px"
+                             th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
+                             alt="Poster"/>
+                    </div>
+                    <div class="row">
+
+                        <button id="btnCorazon" name="btnCorazon">
+                            <i class="bi bi-heart-fill" id="CLleno"></i> 
+                            <i class="bi bi-heart" id="CVacio"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col"
+                     th:text="|${pelicula.release_date} ${pelicula.vote_average} ${pelicula.vote_count}|">
+                </div>
+
+                <div class="col"
+                     th:text="|correo: ${pelicula.original_language} cel: ${pelicula.original_title} tel: ${pelicula.popularity}|">
+                </div>
+
+                <div class="col"
+                     th:text="${pelicula.overview}">
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function () {
+                $('#CLleno').hide();
+                $('#CVacio').show();
+                $('#btnCorazon').click(function () {
+                    $('#CLleno').toggle();
+                    $('#CVacio').toggle();
+                });
+
+//                $('#CheckActivo').prop('checked', false);
+//                $('#CheckActivo').change(function () {
+//                    if (this.checked) {
+////                        $('*{Usuario.ActivoUsuario}').val(this.value = 1);
+//                        this.value = 1;
+//                        $('#Activo').text('Activo');
+//                    } else {
+////                        $('*{Usuario.ActivoUsuario}').val(this.value = 0);
+//                        this.value = 0;
+//                        $('#Activo').text('Inactivo');
+//                    }
+//                });
+
+            });
+
+        </script>
+    </body>
+</html>

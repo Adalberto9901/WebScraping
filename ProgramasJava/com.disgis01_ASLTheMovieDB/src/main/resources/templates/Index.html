@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <style>
+
+            body{
+                background-color:  #c7ceb9;
+            }
+
+        </style>
+    </head>
+    <body layout:fragment="body">
+        <h1>BIENVENIDO AL INDEX </h1>
+        <div class="container">
+            <input type="hidden" >
+             <table class="table table-striped-columns  table-hover table-striped table-responsive">
+                <thead >
+                    
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Imagen</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Contacto</th>
+                        <th scope="col">Roll</th>
+                    </tr>
+                </thead>
+                <tbody class="table-dark" >
+                    <tr th:each="pelicula : ${peliculas}"  >
+                        <td th:text="${pelicula.id}" th:attr="data-id=${pelicula.id}" id="ddlidPelicula"></td>
+                        <td> <image style="width: 100px" th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}"></td>
+                        <td th:text="|${pelicula.release_date} ${pelicula.vote_average} ${pelicula.vote_count}|"></td>
+                        <td th:text="|correo: ${pelicula.original_language} cel: ${pelicula.original_title} tel: ${pelicula.popularity}|"></td>
+
+                        <td th:text="${pelicula.overview}" ></td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    </body>
+</html>
