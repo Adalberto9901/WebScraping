@@ -18,6 +18,8 @@ public class Result<T> {
     public T object;
     public List<T> objects;
     
+    public boolean success;
+    public String request_token;
     public int page;
     public T result;
     public List<T> results;

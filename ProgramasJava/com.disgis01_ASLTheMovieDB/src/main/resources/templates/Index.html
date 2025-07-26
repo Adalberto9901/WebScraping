@@ -33,7 +33,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <tbody class="table-dark" >
                     <tr th:each="pelicula : ${peliculas}"  >
                         <td th:text="${pelicula.id}" th:attr="data-id=${pelicula.id}" id="ddlidPelicula"></td>
-                        <td> <image style="width: 100px" th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}"></td>
+                        <td> <image style="width: 100px" th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}">
+                        <button id="btnCorazon" name="btnCorazon">
+                            <span><i class="bi bi-heart-fill" id="CLleno"></i> </span>
+                            <span><i class="bi bi-heart" id="CVacio"></i></span>
+                        </button>
+                        </td>
                         <td th:text="|${pelicula.release_date} ${pelicula.vote_average} ${pelicula.vote_count}|"></td>
                         <td th:text="|correo: ${pelicula.original_language} cel: ${pelicula.original_title} tel: ${pelicula.popularity}|"></td>
 
@@ -44,6 +49,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </table>
         </div>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+            $(document).ready(function () {
+                $('#CLleno').hide();
+                $('#CVacio').show();
+                $('#btnCorazon').click(function () {
+                    $('#CLleno').toggle();
+                    $('#CVacio').toggle();
+                });
 
+            });
+
+        </script>
     </body>
 </html>
