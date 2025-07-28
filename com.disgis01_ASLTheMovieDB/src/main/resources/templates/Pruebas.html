@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cartelera de Películas</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #111;
+                color: #fff;
+                margin: 0;
+                padding: 20px;
+            }
+
+            h1 {
+                text-align: center;
+                margin-bottom: 40px;
+                color: #f39c12;
+            }
+
+            .cartelera {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+            }
+
+            .pelicula {
+                background-color: #222;
+                border-radius: 10px;
+                overflow: hidden;
+                width: 250px;
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+                transition: transform 0.3s;
+            }
+
+            .pelicula:hover {
+                transform: scale(1.05);
+            }
+
+            .poster {
+                width: 100%;
+                height: 370px;
+                object-fit: cover;
+                /*position: relative;*/
+                display: block;
+                transition: transform 0.3s;
+            }
+
+            .info {
+                padding: 15px;
+            }
+
+            .titulo {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #f1c40f;
+            }
+
+            .descripcion {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #ccc;
+            }
+
+            .btnCorazon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: rgba(0,0,0,0.6);
+                border: none;
+                border-radius: 50%;
+                padding: 10px;
+                color: #f1c40f;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.3s;
+                z-index: 10;
+            }
+
+            .btnCorazon:hover {
+                background-color: rgba(255,255,255,0.2);
+                transform: scale(1.1);
+            }
+
+            .iconoCorazonLleno,
+            .iconoCorazonVacio {
+                font-size: 18px;
+            }
+
+            .poster-container {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .boton {
+                position: absolute;
+                top: 0;
+                right: 0;
+                z-index: 10; /* Importante */
+            }
+
+            .overlay-descripcion {
+                position: absolute;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.85);
+                color: #fff;
+                width: 100%;
+                padding: 15px;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 14px;
+                z-index: 5; 
+                pointer-events: none; 
+            }
+
+            .poster-container:hover .overlay-descripcion {
+                opacity: 1;
+            }
+
+            .poster-container:hover .poster {
+                transform: scale(1.05);
+            }
+        </style>
+    </head>
+    <body layout:fragment="body">
+        <div th:if="${sessionId != null}">
+            <!--<p>Sesión activa: <strong th:text="${sessionId}"></strong></p>-->
+            <input type="text" th:value="${sessionId}">
+            <p>Sesión activa: <strong th:text="${username}"></strong></p>
+        </div>
+        <div th:if="${sessionId == null}">
+            <p>Sesión no iniciada</p>
+        </div>
+
+        <h1>🎥 Cartelera de Películas</h1>
+
+        <div class="cartelera">
+
+            <div class="pelicula"  th:each="pelicula : ${peliculas}">
+                <div class="poster-container">
+                    <!--                <div class="col" 
+                                         th:text="${pelicula.id}" 
+                                         th:attr="data-id=${pelicula.id}" 
+                                         id="ddlidPelicula">
+                                    </div>-->
+
+                    <div class="boton" th:if="${sessionId != null}">
+
+                        <button id="btnCorazon" class="btnCorazon" th:attr="data-id=${pelicula.id}">
+                            <span><i class="bi bi-heart-fill iconoCorazonLleno" style="display:none;"></i></span>
+                            <span><i class="bi bi-heart iconoCorazonVacio"></i></span>
+                        </button>
+                    </div>
+
+                    <img class="poster" 
+                         th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
+                         alt="Póster de Película">
+
+                    <div class="overlay-descripcion"
+                         th:text="|${pelicula.overview}|"
+                         >
+
+                    </div>
+                    <div class="info">
+                        <div class="titulo"
+                             th:text="|${pelicula.original_title} |"
+                             >
+
+                        </div>
+                        <div class="descripcion"
+                             th:text="| ${pelicula.original_language} |"
+                             >
+
+                        </div>
+                        <div class="descripcion"
+                             th:text="| ${pelicula.popularity}|"
+                             >
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+</html>
