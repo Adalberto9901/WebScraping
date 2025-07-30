@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de la Película</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #fff;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #f39c12;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .detalle-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #222;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .poster-lado {
+            flex: 1;
+            max-width: 300px;
+            margin-right: 30px;
+        }
+
+        .poster-lado img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+
+        .info-lado {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .info-lado h2 {
+            color: #f1c40f;
+            margin-top: 0;
+        }
+
+        .info-lado p {
+            margin: 10px 0;
+            color: #ccc;
+        }
+
+        .info-lado ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .info-lado a {
+            color: #1abc9c;
+            text-decoration: none;
+        }
+
+        .info-lado a:hover {
+            text-decoration: underline;
+        }
+
+        .btnCorazon {
+            background-color: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            color: #f1c40f;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .btnCorazon:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .iconoCorazonLleno, .iconoCorazonVacio {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body layout:fragment="body">
+
+<h2 > Detalle de la Pelicula</h2>
+<h1 th:text="${pelicula.title}"></h1>
+
+<div class="detalle-container">
+
+    <div class="poster-lado">
+        <img th:src="${pelicula.poster_path == null} ? 
+                     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 
+                     'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
+             alt="Póster de Película">
+    </div>
+
+    <div class="info-lado">
+        <button id="btnCorazon" class="btnCorazon" th:if="${sessionId != null}" th:attr="data-id=${pelicula.id}">
+            <span><i class="bi bi-heart-fill iconoCorazonLleno"></i></span>
+            <span><i class="bi bi-heart iconoCorazonVacio" style="display:none;"></i></span>
+        </button>
+
+        <h2 th:text="${pelicula.original_title}"></h2>
+
+        <p><strong>Fecha de estreno:</strong> <span th:text="${pelicula.release_date}"></span></p>
+        <p><strong>Idioma original:</strong> <span th:text="${pelicula.original_language}"></span></p>
+        <p><strong>Duración:</strong> <span th:text="${pelicula.runtime} + ' min'"></span></p>
+        <p><strong>Popularidad:</strong> <span th:text="${pelicula.popularity}"></span></p>
+        <p><strong>Promedio de votos:</strong> <span th:text="${pelicula.vote_average}"></span> / 10</p>
+        <p><strong>Resumen:</strong> <span th:text="${pelicula.overview}"></span></p>
+
+        <p><strong>Géneros:</strong>
+            <span th:each="genero : ${pelicula.genres}" th:text="${genero.name}" ></span>
+        </p>
+
+        <p><strong>Productoras:</strong></p>
+        <ul>
+            <li th:each="prod : ${pelicula.production_companies}" th:text="${prod.name}"></li>
+        </ul>
+
+        <p><strong>Idiomas hablados:</strong></p>
+        <ul>
+            <li th:each="lang : ${pelicula.spoken_languages}" th:text="${lang.english_name}"></li>
+        </ul>
+
+<!--        <p th:if="${pelicula.homepage != null}">
+            <strong>Sitio oficial:</strong>
+            <a th:href="${pelicula.homepage}" target="_blank" th:text="${pelicula.homepage}"></a>
+        </p>-->
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script>
+    $(document).ready(function () {
+        const boton = $('#btnCorazon');
+        const mediaId = boton.data("id");
+
+        boton.find('.iconoCorazonLleno').show();
+        boton.find('.iconoCorazonVacio').hide();
+
+        boton.click(function () {
+            boton.find('.iconoCorazonLleno').toggle();
+            boton.find('.iconoCorazonVacio').toggle();
+
+            const favorite = boton.find('.iconoCorazonLleno').is(':visible');
+            $.ajax({
+                url: "/movie/favorito",
+                type: "POST",
+                data: {mediaId: mediaId, favorite: favorite},
+                success: function (response) {
+                    alert(favorite ? "Película marcada como favorita" : "Película desmarcada");
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

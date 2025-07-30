@@ -4,6 +4,7 @@
  */
 package com.disgis01.ASalinasNCapas.ML;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @author Alien 1
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Pelicula {
 
     private int id;
@@ -22,13 +24,27 @@ public class Pelicula {
     public String release_date;
     private String title;
     private boolean video;
-    private float vote_average;
+    private double vote_average;
     private int vote_count;
 
     private boolean adult;
     private String backdrop_path;
     private List<Integer> genre_ids;
 
+    private String imdb_id;
+    private String homepage;
+    private int revenue;
+    private int runtime;
+    private String status;
+    private String tagline;
+    private int budget;
+
+    public BelongsToCollection belongs_to_collection;
+    public List<Genres> genres;
+    public List<ProductionCompanies> production_companies;
+    public List<ProductionCountries> production_countries;
+    public List<SpokenLanguages> spoken_languages;
+    
     public int getId() {
         return id;
     }
@@ -101,11 +117,11 @@ public class Pelicula {
         this.video = video;
     }
 
-    public float getVote_average() {
+    public double getVote_average() {
         return vote_average;
     }
 
-    public void setVote_average(float vote_average) {
+    public void setVote_average(double vote_average) {
         this.vote_average = vote_average;
     }
 
@@ -140,4 +156,101 @@ public class Pelicula {
     public void setGenre_ids(List<Integer> genre_ids) {
         this.genre_ids = genre_ids;
     }
+
+    public String getImdb_id() {
+        return imdb_id;
+    }
+
+    public void setImdb_id(String imdb_id) {
+        this.imdb_id = imdb_id;
+    }
+
+    public String getHomepage() {
+        return homepage;
+    }
+
+    public void setHomepage(String homepage) {
+        this.homepage = homepage;
+    }
+
+    public int getRevenue() {
+        return revenue;
+    }
+
+    public void setRevenue(int revenue) {
+        this.revenue = revenue;
+    }
+
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }
+
+    public int getBudget() {
+        return budget;
+    }
+
+    public void setBudget(int budget) {
+        this.budget = budget;
+    }
+
+    public BelongsToCollection getBelongs_to_collection() {
+        return belongs_to_collection;
+    }
+
+    public void setBelongs_to_collection(BelongsToCollection belongs_to_collection) {
+        this.belongs_to_collection = belongs_to_collection;
+    }
+
+    public List<Genres> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genres> genres) {
+        this.genres = genres;
+    }
+
+    public List<ProductionCompanies> getProduction_companies() {
+        return production_companies;
+    }
+
+    public void setProduction_companies(List<ProductionCompanies> production_companies) {
+        this.production_companies = production_companies;
+    }
+
+    public List<ProductionCountries> getProduction_countries() {
+        return production_countries;
+    }
+
+    public void setProduction_countries(List<ProductionCountries> production_countries) {
+        this.production_countries = production_countries;
+    }
+
+    public List<SpokenLanguages> getSpoken_languages() {
+        return spoken_languages;
+    }
+
+    public void setSpoken_languages(List<SpokenLanguages> spoken_languages) {
+        this.spoken_languages = spoken_languages;
+    }
+
 }

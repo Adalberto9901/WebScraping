@@ -118,8 +118,8 @@
                 justify-content: center;
                 text-align: center;
                 font-size: 14px;
-                z-index: 5; 
-                pointer-events: none; 
+                z-index: 5;
+                pointer-events: none;
             }
 
             .poster-container:hover .overlay-descripcion {
@@ -147,11 +147,6 @@
 
             <div class="pelicula"  th:each="pelicula : ${peliculas}">
                 <div class="poster-container">
-                    <!--                <div class="col" 
-                                         th:text="${pelicula.id}" 
-                                         th:attr="data-id=${pelicula.id}" 
-                                         id="ddlidPelicula">
-                                    </div>-->
 
                     <div class="boton" th:if="${sessionId != null}">
 
@@ -160,11 +155,11 @@
                             <span><i class="bi bi-heart iconoCorazonVacio"></i></span>
                         </button>
                     </div>
-
-                    <img class="poster" 
-                         th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
-                         alt="Póster de Película">
-
+                    <a th:href="@{/demo/detalle(movieId=${pelicula.id})}" >
+                        <img class="poster" 
+                             th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
+                             alt="Póster de Película">
+                    </a>
                     <div class="overlay-descripcion"
                          th:text="|${pelicula.overview}|"
                          >
@@ -193,5 +188,45 @@
 
         </div>
 
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function () {
+                $('.btnCorazon').each(function () {
+                    const boton = $(this);
+                    const mediaId = $(this).data("id");
+
+                    boton.find('.iconoCorazonLleno').hide();
+                    boton.find('.iconoCorazonVacio').show();
+
+                    boton.click(function () {
+                        boton.find('.iconoCorazonLleno').toggle();
+                        boton.find('.iconoCorazonVacio').toggle();
+
+                        const favorite = boton.find('.iconoCorazonLleno').is(':visible');
+                        $.ajax({
+                            url: "/movie/favorito",
+                            type: "POST",
+                            data: {mediaId: mediaId, favorite: favorite},
+                            success: function (response) {
+                                if (favorite) {
+                                    alert("Película marcada como favorita");
+                                } else {
+                                    alert("Película desmarcada como favorita");
+                                }
+                            },
+                            error: function (xhr) {
+                                alert("Error: " + xhr.responseText);
+                            }
+                        });
+                    });
+
+                });
+
+                let guestSessionId = /*[[${guestSessionId}]]*/ '';
+                console.log("Guest session ID:", guestSessionId);
+
+            });
+
+        </script>
     </body>
 </html>

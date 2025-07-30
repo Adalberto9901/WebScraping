@@ -9,7 +9,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Cartelera de Películas</title>
+        <title>Tus Películas Favoritas</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -164,10 +164,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <span><i class="bi bi-heart iconoCorazonVacio" style="display:none;"></i></span>
                         </button>
                     </div>
-                    <img class="poster" 
-                         th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
-                         alt="Póster de Película">
-                    
+                    <a th:href="@{/movie/detalle(movieId=${pelicula.id})}" >
+                        <img class="poster" 
+                             th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
+                             alt="Póster de Película">
+                    </a>
                     <div class="overlay-descripcion"
                          th:text="|${pelicula.overview}|"
                         >
@@ -175,7 +176,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     </div>
                     <div class="info">
                         <div class="titulo"
-                             th:text="|${pelicula.original_title} |"
+                             th:text="|${pelicula.title} |"
                              >
 
                         </div>
@@ -185,7 +186,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                         </div>
                         <div class="descripcion"
-                             th:text="| ${pelicula.popularity}|"
+                             th:text="| ${pelicula.vote_average}|"
                              >
 
                         </div>

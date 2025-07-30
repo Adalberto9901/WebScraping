@@ -115,40 +115,42 @@ public class UsuarioController {
             @RequestParam String password,
             Model model,
             HttpSession session) {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
 
         try {
-            String apiKey = "be7257bde537c9b02d2f1ae676e95e75";
-            String tokenUrl = "https://api.themoviedb.org/3/authentication/token/new?api_key=" + apiKey;
+            String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
 
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<Map> tokenResponse = restTemplate.getForEntity(tokenUrl, Map.class);
+
+            String tokenUrl = "https://api.themoviedb.org/3/authentication/token/new";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(bearerToken);
+
+            HttpEntity<Void> tokenEntity = new HttpEntity<>(headers);
+            ResponseEntity<Map> tokenResponse = restTemplate.exchange(tokenUrl, HttpMethod.GET, tokenEntity, Map.class);
             String requestToken = (String) tokenResponse.getBody().get("request_token");
 
-            String validateUrl = "https://api.themoviedb.org/3/authentication/token/validate_with_login?api_key=" + apiKey;
+            String validateUrl = "https://api.themoviedb.org/3/authentication/token/validate_with_login";
             Map<String, String> credentials = Map.of(
                     "username", username,
                     "password", password,
                     "request_token", requestToken
             );
+            HttpEntity<Map<String, String>> validateEntity = new HttpEntity<>(credentials, headers);
+            restTemplate.postForEntity(validateUrl, validateEntity, Map.class);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(credentials, headers);
-
-            ResponseEntity<Map> validateResponse = restTemplate.postForEntity(validateUrl, entity, Map.class);
-
-            String sessionUrl = "https://api.themoviedb.org/3/authentication/session/new?api_key=" + apiKey;
+            String sessionUrl = "https://api.themoviedb.org/3/authentication/session/new";
             Map<String, String> tokenMap = Map.of("request_token", requestToken);
             HttpEntity<Map<String, String>> sessionEntity = new HttpEntity<>(tokenMap, headers);
-
             ResponseEntity<Map> sessionResponse = restTemplate.postForEntity(sessionUrl, sessionEntity, Map.class);
+
             String sessionId = (String) sessionResponse.getBody().get("session_id");
 
             model.addAttribute("guestSessionId", sessionId);
-
             session.setAttribute("username", username);
             session.setAttribute("sessionId", sessionId);
+
             return "redirect:index";
 
         } catch (Exception ex) {
@@ -160,10 +162,18 @@ public class UsuarioController {
 
     @GetMapping("/guestSession")
     public String CreateGuestSession(Model model) {
-        String url = "https://api.themoviedb.org/3/authentication/guest_session/new?api_key=be7257bde537c9b02d2f1ae676e95e75";
+        String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
+
+        String url = "https://api.themoviedb.org/3/authentication/guest_session/new";
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(bearerToken); 
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             String guestSessionId = (String) response.getBody().get("guest_session_id");
@@ -184,7 +194,7 @@ public class UsuarioController {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", "Bearer " + token);
             HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/popular?language=es-MX",
+            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/now_playing?language=es-MX",
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<Result<Pelicula>>() {
@@ -244,7 +254,7 @@ public class UsuarioController {
         Result result = new Result();
 
         try {
-            String apiKey = "be7257bde537c9b02d2f1ae676e95e75";
+            String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
             String sessionId = (String) session.getAttribute("sessionId");
 
             if (sessionId == null) {
@@ -252,33 +262,37 @@ public class UsuarioController {
                 return "redirect:login";
             }
 
-            String accountUrl = "https://api.themoviedb.org/3/account?api_key=" + apiKey + "&session_id=" + sessionId;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(bearerToken);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<Map> accountResponse = restTemplate.getForEntity(accountUrl, Map.class);
+
+            String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
+
+            HttpEntity<Void> accountEntity = new HttpEntity<>(headers);
+            ResponseEntity<Map> accountResponse = restTemplate.exchange(accountUrl, HttpMethod.GET, accountEntity, Map.class);
             Integer accountId = (Integer) accountResponse.getBody().get("id");
 
             String favoriteUrl = String.format(
-                    "https://api.themoviedb.org/3/account/%d/favorite/movies?api_key=%s&session_id=%s&language=es-MX",
-                    accountId, apiKey, sessionId
+                    "https://api.themoviedb.org/3/account/%d/favorite/movies?session_id=%s&language=es-MX",
+                    accountId, sessionId
             );
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + apiKey); 
-            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+            HttpEntity<Void> favoriteEntity = new HttpEntity<>(headers);
             ResponseEntity<Result<Pelicula>> response = restTemplate.exchange(
                     favoriteUrl,
                     HttpMethod.GET,
-                    requestEntity,
+                    favoriteEntity,
                     new ParameterizedTypeReference<Result<Pelicula>>() {
             }
             );
-            List<Pelicula> Pelicula = response.getBody().results;
+
+            List<Pelicula> peliculas = response.getBody().results;
 
             String username = (String) session.getAttribute("username");
-            sessionId = (String) session.getAttribute("sessionId");
 
-            model.addAttribute("peliculas", Pelicula);
+            model.addAttribute("peliculas", peliculas);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
 
@@ -290,6 +304,55 @@ public class UsuarioController {
         return "redirect:index";
     }
 
+    @GetMapping("detalle")
+    public String Detalle(HttpSession session,
+            @RequestParam("movieId") String movieId,
+            Model model) {
+        Result result = new Result();
+        try {
+            String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
+            String sessionId = (String) session.getAttribute("sessionId");
+
+            RestTemplate restTemplate = new RestTemplate();
+
+            String url = "https://api.themoviedb.org/3/movie/" + movieId + "?language=es-MX";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(bearerToken);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
+
+            HttpEntity<Void> accountEntity = new HttpEntity<>(headers);
+            ResponseEntity<Map> accountResponse = restTemplate.exchange(accountUrl, HttpMethod.GET, accountEntity, Map.class);
+            Integer accountId = (Integer) accountResponse.getBody().get("id");
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+            Pelicula pelicula = mapper.readValue(response.getBody(), Pelicula.class);
+
+            String username = (String) session.getAttribute("username");
+
+            model.addAttribute("pelicula", pelicula);
+            model.addAttribute("username", username);
+            model.addAttribute("sessionId", sessionId);
+            
+            return "Details";
+        } catch (Exception ex) {
+            result.errorMasassge = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return "redirect:index";
+    }
+    
     @PostMapping("/favorito")
     @ResponseBody
     public ResponseEntity<String> marcarFavorito(@RequestParam("mediaId") String mediaId, 
