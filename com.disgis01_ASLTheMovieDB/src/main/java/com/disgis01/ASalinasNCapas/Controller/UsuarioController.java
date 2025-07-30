@@ -76,39 +76,6 @@ public class UsuarioController {
     public String login() {
         return "login";
     }
-
-    @GetMapping("/prueba")
-    public String prueba(HttpSession session, Model model) {
-        Result result = new Result();
-
-        try {
-            String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
-
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("Authorization", "Bearer " + token);
-            HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/popular?language=es-MX",
-                    HttpMethod.GET,
-                    requestEntity,
-                    new ParameterizedTypeReference<Result<Pelicula>>() {
-            });
-            List<Pelicula> Pelicula = response.getBody().results;
-
-            String username = (String) session.getAttribute("username");
-            String sessionId = (String) session.getAttribute("sessionId");
-
-            model.addAttribute("peliculas", Pelicula);
-            model.addAttribute("username", username);
-            model.addAttribute("sessionId", sessionId);
-
-            return "Pruebas";
-        } catch (Exception ex) {
-            result.errorMasassge = ex.getLocalizedMessage();
-            result.ex = ex;
-        }
-        return "redirect:login";
-    }
     
     @PostMapping("/login")
     public String CreateSessionLogin(@RequestParam String username,
@@ -184,7 +151,7 @@ public class UsuarioController {
     }
 
     @GetMapping("index")
-    public String Index(HttpSession session, Model model) {
+    public String Index(@RequestParam(name = "lang", defaultValue = "es-MX") String lang, HttpSession session, Model model) {
         Result result = new Result();
 
         try {
@@ -194,7 +161,7 @@ public class UsuarioController {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", "Bearer " + token);
             HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/now_playing?language=es-MX",
+            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/now_playing?language=" + lang,
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<Result<Pelicula>>() {
@@ -207,6 +174,7 @@ public class UsuarioController {
             model.addAttribute("peliculas", Pelicula);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
+            model.addAttribute("selectedLang", lang); 
 
             return "index";
         } catch (Exception ex) {
@@ -217,7 +185,7 @@ public class UsuarioController {
     }
 
     @GetMapping("popularMovie")
-    public String PopularMovie(HttpSession session, Model model) {
+    public String PopularMovie(@RequestParam(name = "lang", defaultValue = "es-MX") String lang, HttpSession session, Model model) {
         Result result = new Result();
 
         try {
@@ -227,7 +195,7 @@ public class UsuarioController {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", "Bearer " + token);
             HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/popular?language=es-MX",
+            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/popular?language=" + lang,
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<Result<Pelicula>>() {
@@ -240,6 +208,7 @@ public class UsuarioController {
             model.addAttribute("peliculas", Pelicula);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
+            model.addAttribute("selectedLang", lang); 
 
             return "PopularMovie";
         } catch (Exception ex) {
@@ -250,7 +219,7 @@ public class UsuarioController {
     }
 
     @GetMapping("peliculaFavorita")
-    public String PeliculaFavorita(HttpSession session, Model model) {
+    public String PeliculaFavorita(@RequestParam(name = "lang", defaultValue = "es-MX") String lang, HttpSession session, Model model) {
         Result result = new Result();
 
         try {
@@ -275,7 +244,7 @@ public class UsuarioController {
             Integer accountId = (Integer) accountResponse.getBody().get("id");
 
             String favoriteUrl = String.format(
-                    "https://api.themoviedb.org/3/account/%d/favorite/movies?session_id=%s&language=es-MX",
+                    "https://api.themoviedb.org/3/account/%d/favorite/movies?session_id=%s&language=" + lang,
                     accountId, sessionId
             );
 
@@ -295,6 +264,7 @@ public class UsuarioController {
             model.addAttribute("peliculas", peliculas);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
+            model.addAttribute("selectedLang", lang); 
 
             return "PeliculaFavorita";
         } catch (Exception ex) {
@@ -305,9 +275,9 @@ public class UsuarioController {
     }
 
     @GetMapping("detalle")
-    public String Detalle(HttpSession session,
-            @RequestParam("movieId") String movieId,
-            Model model) {
+    public String Detalle(@RequestParam(name = "lang", defaultValue = "es-MX") String lang,
+            HttpSession session,
+            @RequestParam("movieId") String movieId, Model model) {
         Result result = new Result();
         try {
             String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
@@ -315,7 +285,7 @@ public class UsuarioController {
 
             RestTemplate restTemplate = new RestTemplate();
 
-            String url = "https://api.themoviedb.org/3/movie/" + movieId + "?language=es-MX";
+            String url = "https://api.themoviedb.org/3/movie/" + movieId + "?language=" + lang;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(bearerToken);
@@ -344,6 +314,7 @@ public class UsuarioController {
             model.addAttribute("pelicula", pelicula);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
+            model.addAttribute("selectedLang", lang); 
             
             return "Details";
         } catch (Exception ex) {

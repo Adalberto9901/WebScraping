@@ -67,7 +67,7 @@
                 color: #ccc;
             }
 
-            .btnCorazon {
+            .btnCorazon{
                 position: absolute;
                 top: 10px;
                 right: 10px;
@@ -81,7 +81,7 @@
                 z-index: 10;
             }
 
-            .btnCorazon:hover {
+            .btnCorazon:hover{
                 background-color: rgba(255,255,255,0.2);
                 transform: scale(1.1);
             }
@@ -150,42 +150,38 @@
 
                     <div class="boton" th:if="${sessionId != null}">
 
-                        <button id="btnCorazon" class="btnCorazon" th:attr="data-id=${pelicula.id}">
-                            <span><i class="bi bi-heart-fill iconoCorazonLleno" style="display:none;"></i></span>
-                            <span><i class="bi bi-heart iconoCorazonVacio"></i></span>
+                        <button class="btnCorazon" th:attr="data-id=${pelicula.id}" th:classappend="${peliculasFavoritas.contains(pelicula.id)} ? ' favorito' : ''">
+                            <span th:if="${peliculasFavoritas.contains(pelicula.id)}"><i class="bi bi-heart-fill iconoCorazonLleno"></i></span>
+                            <span th:unless="${peliculasFavoritas.contains(pelicula.id)}"><i class="bi bi-heart iconoCorazonVacio"></i></span>
                         </button>
                     </div>
+
                     <a th:href="@{/demo/detalle(movieId=${pelicula.id})}" >
                         <img class="poster" 
                              th:src="${pelicula.poster_path == null} ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png' : 'https://image.tmdb.org/t/p/w500' + ${pelicula.poster_path}" 
                              alt="Póster de Película">
                     </a>
                     <div class="overlay-descripcion"
-                         th:text="|${pelicula.overview}|"
-                         >
+                         th:attr="data-es=${pelicula.overview}, data-en=${pelicula.overview}"
+                         th:text="${pelicula.overview}">
+                    </div>
+
+                    <div class="titulo"
+                         th:attr="data-es=${pelicula.title}, data-en=${pelicula.title}"
+                         th:text="${pelicula.title}">
+                    </div>
+
+                    <div class="descripcion"
+                         th:text="| ${pelicula.original_language} |">
 
                     </div>
-                    <div class="info">
-                        <div class="titulo"
-                             th:text="|${pelicula.original_title} |"
-                             >
-
-                        </div>
-                        <div class="descripcion"
-                             th:text="| ${pelicula.original_language} |"
-                             >
-
-                        </div>
-                        <div class="descripcion"
-                             th:text="| ${pelicula.popularity}|"
-                             >
-
-                        </div>
+                    <div class="descripcion"
+                         th:text="| ${pelicula.popularity}|">
 
                     </div>
+
                 </div>
             </div>
-
         </div>
 
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -195,8 +191,6 @@
                     const boton = $(this);
                     const mediaId = $(this).data("id");
 
-                    boton.find('.iconoCorazonLleno').hide();
-                    boton.find('.iconoCorazonVacio').show();
 
                     boton.click(function () {
                         boton.find('.iconoCorazonLleno').toggle();
@@ -219,13 +213,9 @@
                             }
                         });
                     });
-
                 });
-
-                let guestSessionId = /*[[${guestSessionId}]]*/ '';
-                console.log("Guest session ID:", guestSessionId);
-
             });
+
 
         </script>
     </body>

@@ -136,14 +136,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </style>
     </head>
     <body layout:fragment="body">
-        <div th:if="${sessionId != null}">
-            <!--<p>Sesión activa: <strong th:text="${sessionId}"></strong></p>-->
+<!--        <div th:if="${sessionId != null}">
+            <p>Sesión activa: <strong th:text="${sessionId}"></strong></p>
             <input type="text" th:value="${sessionId}">
             <p>Sesión activa: <strong th:text="${username}"></strong></p>
-        </div>
-        <div th:if="${sessionId == null}">
+        </div>-->
+        <!--<div th:if="${sessionId != null}">-->
+            <!--<p>Sesión activa: <strong th:text="${sessionId}"></strong></p>-->
+            <input type="text" th:value="${sessionId}">
+            <input type="text" th:value="${guestSessionId}">
+        <!--</div>-->
+<!--        <div th:if="${sessionId == null}">
             <p>Sesión no iniciada</p>
-        </div>
+        </div>-->
 
         <h1>🎥 Cartelera de Películas</h1>
 

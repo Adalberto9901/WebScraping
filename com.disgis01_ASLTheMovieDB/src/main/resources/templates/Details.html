@@ -98,6 +98,19 @@
 <h2 > Detalle de la Pelicula</h2>
 <h1 th:text="${pelicula.title}"></h1>
 
+<!--        <div th:if="${sessionId != null}">
+            <p>Sesión activa: <strong th:text="${sessionId}"></strong></p>
+            <input type="text" th:value="${sessionId}">
+            <p>Sesión activa: <strong th:text="${username}"></strong></p>
+        </div>-->
+        <!--<div th:if="${sessionId != null}">-->
+            <!--<p>Sesión activa: <strong th:text="${sessionId}"></strong></p>-->
+            <input type="hidden" th:value="${sessionId}">
+        <!--</div>-->
+<!--        <div th:if="${sessionId == null}">
+            <p>Sesión no iniciada</p>
+        </div>-->
+
 <div class="detalle-container">
 
     <div class="poster-lado">

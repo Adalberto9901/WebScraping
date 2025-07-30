@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -46,36 +47,63 @@ public class DemoController {
     }
 
     @GetMapping("/prueba")
-    public String prueba(HttpSession session, Model model) {
+    public String prueba(@RequestParam(name = "lang", defaultValue = "es-MX") String lang,
+            HttpSession session, Model model) {
         Result result = new Result();
 
         try {
             String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
-
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("Authorization", "Bearer " + token);
-            HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/popular?language=es-MX",
-                    HttpMethod.GET,
-                    requestEntity,
-                    new ParameterizedTypeReference<Result<Pelicula>>() {
-            });
-            List<Pelicula> Pelicula = response.getBody().results;
-
             String username = (String) session.getAttribute("username");
             String sessionId = (String) session.getAttribute("sessionId");
 
-            model.addAttribute("peliculas", Pelicula);
+            // 1. Obtener películas populares
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + token);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+
+            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange(
+                    "https://api.themoviedb.org/3/movie/popular?language=" + lang,
+                    HttpMethod.GET, request,
+                    new ParameterizedTypeReference<Result<Pelicula>>() {
+            }
+            );
+            List<Pelicula> peliculas = response.getBody().results;
+            
+            String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
+                ResponseEntity<Map> accountResponse = restTemplate.exchange(
+                    accountUrl, HttpMethod.GET, request, Map.class
+                );
+            Integer accountId = (Integer) accountResponse.getBody().get("id");
+            // 2. Obtener favoritas del usuario (según si está logueado o es invitado)
+            List<Integer> peliculasFavoritas = new ArrayList<>();
+            if (sessionId != null) {
+                String favUrl = "https://api.themoviedb.org/3/account/" + accountId + "/favorite/movies?session_id=" + sessionId;
+                ResponseEntity<Result<Pelicula>> favResponse = restTemplate.exchange(
+                    favUrl, HttpMethod.GET, request,
+                    new ParameterizedTypeReference<Result<Pelicula>>() {}
+                );
+
+                if (favResponse.getBody() != null && favResponse.getBody().results != null) {
+                    peliculasFavoritas = (List<Integer>) favResponse.getBody().results
+                            .stream()
+                            .map(Pelicula::getId)
+                            .collect(Collectors.toList());
+                }
+            }
+
+            model.addAttribute("peliculas", peliculas);
+            model.addAttribute("peliculasFavoritas", peliculasFavoritas);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
+            model.addAttribute("selectedLang", lang);
 
             return "Pruebas";
         } catch (Exception ex) {
             result.errorMasassge = ex.getLocalizedMessage();
             result.ex = ex;
         }
-        return "redirect:login";
+        return "redirect:index";
     }
 
     @PostMapping("/login")
@@ -320,7 +348,7 @@ public class DemoController {
             model.addAttribute("pelicula", pelicula);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
-            
+
             return "Details";
         } catch (Exception ex) {
             result.errorMasassge = ex.getLocalizedMessage();
