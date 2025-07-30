@@ -151,9 +151,17 @@
                     <div class="boton" th:if="${sessionId != null}">
 
                         <button class="btnCorazon" th:attr="data-id=${pelicula.id}" th:classappend="${peliculasFavoritas.contains(pelicula.id)} ? ' favorito' : ''">
-                            <span th:if="${peliculasFavoritas.contains(pelicula.id)}"><i class="bi bi-heart-fill iconoCorazonLleno"></i></span>
-                            <span th:unless="${peliculasFavoritas.contains(pelicula.id)}"><i class="bi bi-heart iconoCorazonVacio"></i></span>
+
+                            <span class="iconoCorazonLleno" th:style="${peliculasFavoritas.contains(pelicula.id)} ? '' : 'display: none;'">
+                                <i class="bi bi-heart-fill"></i>
+                            </span>
+
+                            <span class="iconoCorazonVacio" th:style="${peliculasFavoritas.contains(pelicula.id)} ? 'display: none;' : ''">
+                                <i class="bi bi-heart"></i>
+                            </span>
+
                         </button>
+
                     </div>
 
                     <a th:href="@{/demo/detalle(movieId=${pelicula.id})}" >
@@ -191,6 +199,14 @@
                     const boton = $(this);
                     const mediaId = $(this).data("id");
 
+                    if (boton.hasClass('favorito')) {
+                        boton.find('.iconoCorazonVacio').hide();
+                        boton.find('.iconoCorazonLleno').show();
+
+                    } else {
+                        boton.find('.iconoCorazonLleno').hide();
+                        boton.find('.iconoCorazonVacio').show();
+                    }
 
                     boton.click(function () {
                         boton.find('.iconoCorazonLleno').toggle();
@@ -213,10 +229,13 @@
                             }
                         });
                     });
+
                 });
+
+                let guestSessionId = /*[[${guestSessionId}]]*/ '';
+                console.log("Guest session ID:", guestSessionId);
+
             });
-
-
         </script>
     </body>
 </html>
