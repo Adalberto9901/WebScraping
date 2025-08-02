@@ -17,7 +17,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <script>
             function changeLanguage() {
                 const selectedLang = document.getElementById('languageSelect').value;
-                window.location.href = '/demo/prueba?lang=' + selectedLang;
+                
+                let url = window.window.location.pathname;
+                let params = new URLSearchParams(window.location.search);
+                params.set('lang',selectedLang);
+                window.location.href = url + '?' + params.toString();
             }
 
         </script>
@@ -47,15 +51,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <a class="nav-link text-white" th:href="@{/demo/prueba}">Pruebas</a>
                     </li>
                 </ul>
-
-                <!--                <div th:if="${sessionId != null}">
-                                    <span>Sesión activa: <strong th:text="${sessionId}"></strong></span>
-                                    <form th:action="@{/movie/logout}" method="get" class="d-inline">
-                                        <button type="submit" class="btn btn-outline-light btn-sm ms-2">Cerrar sesión</button>
-                                    </form>
-                                </div>
-                
-                -->
                 <div >
                     <select id="languageSelect" class="form-select form-select-sm bg-dark text-white border-light" 
                             onchange="changeLanguage()" style="width: auto;">

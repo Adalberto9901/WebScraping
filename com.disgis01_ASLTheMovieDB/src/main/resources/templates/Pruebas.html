@@ -129,6 +129,30 @@
             .poster-container:hover .poster {
                 transform: scale(1.05);
             }
+
+            .alerta-custom {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: #2ecc71;
+                color: #fff;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.4s, top 0.4s;
+                font-size: 14px;
+            }
+
+            .alerta-custom.error {
+                background-color: #e74c3c;
+            }
+
+            .alerta-custom.show {
+                opacity: 1;
+                top: 40px;
+            }
         </style>
     </head>
     <body layout:fragment="body">
@@ -140,6 +164,9 @@
         <div th:if="${sessionId == null}">
             <p>Sesión no iniciada</p>
         </div>
+        
+        <div id="alertaCustom" class="alerta-custom"></div>
+
 
         <h1>🎥 Cartelera de Películas</h1>
 
@@ -195,10 +222,11 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script>
             $(document).ready(function () {
+
+                $('.alert').hide();
                 $('.btnCorazon').each(function () {
                     const boton = $(this);
                     const mediaId = $(this).data("id");
-
                     if (boton.hasClass('favorito')) {
                         boton.find('.iconoCorazonVacio').hide();
                         boton.find('.iconoCorazonLleno').show();
@@ -211,18 +239,17 @@
                     boton.click(function () {
                         boton.find('.iconoCorazonLleno').toggle();
                         boton.find('.iconoCorazonVacio').toggle();
-
                         const favorite = boton.find('.iconoCorazonLleno').is(':visible');
                         $.ajax({
                             url: "/movie/favorito",
                             type: "POST",
                             data: {mediaId: mediaId, favorite: favorite},
                             success: function (response) {
-                                if (favorite) {
-                                    alert("Película marcada como favorita");
-                                } else {
-                                    alert("Película desmarcada como favorita");
-                                }
+                        if (favorite) {
+                            mostrarAlerta("Película marcada como favorita");
+                        } else {
+                            mostrarAlerta("Película desmarcada como favorita", "error");
+                        }
                             },
                             error: function (xhr) {
                                 alert("Error: " + xhr.responseText);
@@ -236,6 +263,23 @@
                 console.log("Guest session ID:", guestSessionId);
 
             });
+            
+            function mostrarAlerta(mensaje, tipo = "success") {
+                const alerta = $('#alertaCustom');
+                alerta.removeClass('error').removeClass('success');
+
+                if (tipo === 'error') {
+                    alerta.addClass('error');
+                }
+
+                alerta.text(mensaje);
+                alerta.addClass('show');
+
+                setTimeout(() => {
+                    alerta.removeClass('show');
+                }, 2500); 
+            }
+
         </script>
     </body>
 </html>

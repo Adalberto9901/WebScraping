@@ -32,6 +32,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -156,22 +157,47 @@ public class UsuarioController {
 
         try {
             String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
-
+            String username = (String) session.getAttribute("username");
+            String sessionId = (String) session.getAttribute("sessionId");
+            
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", "Bearer " + token);
             HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange("https://api.themoviedb.org/3/movie/now_playing?language=" + lang,
+            
+            ResponseEntity<Result<Pelicula>> response = restTemplate.exchange(
+                    "https://api.themoviedb.org/3/movie/now_playing?language=" + lang,
                     HttpMethod.GET,
                     requestEntity,
                     new ParameterizedTypeReference<Result<Pelicula>>() {
             });
-            List<Pelicula> Pelicula = response.getBody().results;
+            
+            List<Pelicula> peliculas = response.getBody().results;
+            
+            String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
+                ResponseEntity<Map> accountResponse = restTemplate.exchange(
+                    accountUrl, HttpMethod.GET, requestEntity, Map.class
+                );
+            Integer accountId = (Integer) accountResponse.getBody().get("id");
+            
+            List<Integer> peliculasFavoritas = new ArrayList<>();
+            if (sessionId != null) {
+                String favUrl = "https://api.themoviedb.org/3/account/" + accountId + "/favorite/movies?session_id=" + sessionId;
+                ResponseEntity<Result<Pelicula>> favResponse = restTemplate.exchange(
+                    favUrl, HttpMethod.GET, requestEntity,
+                    new ParameterizedTypeReference<Result<Pelicula>>() {}
+                );
 
-            String username = (String) session.getAttribute("username");
-            String sessionId = (String) session.getAttribute("sessionId");
-
-            model.addAttribute("peliculas", Pelicula);
+                if (favResponse.getBody() != null && favResponse.getBody().results != null) {
+                    peliculasFavoritas = (List<Integer>) favResponse.getBody().results
+                            .stream()
+                            .map(Pelicula::getId)
+                            .collect(Collectors.toList());
+                }
+            }
+            
+            model.addAttribute("peliculas", peliculas);
+            model.addAttribute("peliculasFavoritas", peliculasFavoritas);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
             model.addAttribute("selectedLang", lang); 
@@ -190,7 +216,9 @@ public class UsuarioController {
 
         try {
             String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
-
+            String username = (String) session.getAttribute("username");
+            String sessionId = (String) session.getAttribute("sessionId");
+            
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", "Bearer " + token);
@@ -200,12 +228,32 @@ public class UsuarioController {
                     requestEntity,
                     new ParameterizedTypeReference<Result<Pelicula>>() {
             });
-            List<Pelicula> Pelicula = response.getBody().results;
+            List<Pelicula> peliculas = response.getBody().results;
 
-            String username = (String) session.getAttribute("username");
-            String sessionId = (String) session.getAttribute("sessionId");
+            String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
+                ResponseEntity<Map> accountResponse = restTemplate.exchange(
+                    accountUrl, HttpMethod.GET, requestEntity, Map.class
+                );
+            Integer accountId = (Integer) accountResponse.getBody().get("id");
+            
+            List<Integer> peliculasFavoritas = new ArrayList<>();
+            if (sessionId != null) {
+                String favUrl = "https://api.themoviedb.org/3/account/" + accountId + "/favorite/movies?session_id=" + sessionId;
+                ResponseEntity<Result<Pelicula>> favResponse = restTemplate.exchange(
+                    favUrl, HttpMethod.GET, requestEntity,
+                    new ParameterizedTypeReference<Result<Pelicula>>() {}
+                );
 
-            model.addAttribute("peliculas", Pelicula);
+                if (favResponse.getBody() != null && favResponse.getBody().results != null) {
+                    peliculasFavoritas = (List<Integer>) favResponse.getBody().results
+                            .stream()
+                            .map(Pelicula::getId)
+                            .collect(Collectors.toList());
+                }
+            }
+
+            model.addAttribute("peliculas", peliculas);
+            model.addAttribute("peliculasFavoritas", peliculasFavoritas);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
             model.addAttribute("selectedLang", lang); 
@@ -282,6 +330,7 @@ public class UsuarioController {
         try {
             String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTcyNTdiZGU1MzdjOWIwMmQyZjFhZTY3NmU5NWU3NSIsIm5iZiI6MTc1MzQ2MjU1OS4xNzIsInN1YiI6IjY4ODNiNzFmOThjNTk3ZjExYThhNjJlYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.z3tTRDwVy052xB0bwNJLoOEb1FhTQivTPWzaw2zrMkU";
             String sessionId = (String) session.getAttribute("sessionId");
+            String username = (String) session.getAttribute("username");
 
             RestTemplate restTemplate = new RestTemplate();
 
@@ -290,12 +339,6 @@ public class UsuarioController {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(bearerToken);
             headers.setContentType(MediaType.APPLICATION_JSON);
-
-            String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
-
-            HttpEntity<Void> accountEntity = new HttpEntity<>(headers);
-            ResponseEntity<Map> accountResponse = restTemplate.exchange(accountUrl, HttpMethod.GET, accountEntity, Map.class);
-            Integer accountId = (Integer) accountResponse.getBody().get("id");
 
             HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -307,11 +350,32 @@ public class UsuarioController {
             );
 
             ObjectMapper mapper = new ObjectMapper();
-            Pelicula pelicula = mapper.readValue(response.getBody(), Pelicula.class);
+            Pelicula peliculas = mapper.readValue(response.getBody(), Pelicula.class);
+            
+                        String accountUrl = "https://api.themoviedb.org/3/account?session_id=" + sessionId;
+                ResponseEntity<Map> accountResponse = restTemplate.exchange(
+                    accountUrl, HttpMethod.GET, entity, Map.class
+                );
+            Integer accountId = (Integer) accountResponse.getBody().get("id");
+            
+            List<Integer> peliculasFavoritas = new ArrayList<>();
+            if (sessionId != null) {
+                String favUrl = "https://api.themoviedb.org/3/account/" + accountId + "/favorite/movies?session_id=" + sessionId;
+                ResponseEntity<Result<Pelicula>> favResponse = restTemplate.exchange(
+                    favUrl, HttpMethod.GET, entity,
+                    new ParameterizedTypeReference<Result<Pelicula>>() {}
+                );
 
-            String username = (String) session.getAttribute("username");
+                if (favResponse.getBody() != null && favResponse.getBody().results != null) {
+                    peliculasFavoritas = (List<Integer>) favResponse.getBody().results
+                            .stream()
+                            .map(Pelicula::getId)
+                            .collect(Collectors.toList());
+                }
+            }
 
-            model.addAttribute("pelicula", pelicula);
+            model.addAttribute("pelicula", peliculas);
+            model.addAttribute("peliculasFavoritas", peliculasFavoritas);
             model.addAttribute("username", username);
             model.addAttribute("sessionId", sessionId);
             model.addAttribute("selectedLang", lang); 

@@ -133,6 +133,30 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             .poster-container:hover .poster {
                 transform: scale(1.05);
             }
+
+            .alerta-custom {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: #2ecc71;
+                color: #fff;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.4s, top 0.4s;
+                font-size: 14px;
+            }
+
+            .alerta-custom.error {
+                background-color: #e74c3c;
+            }
+
+            .alerta-custom.show {
+                opacity: 1;
+                top: 40px;
+            }
         </style>
     </head>
     <body layout:fragment="body">
@@ -142,12 +166,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <p>Sesión activa: <strong th:text="${username}"></strong></p>
         </div>-->
         <!--<div th:if="${sessionId != null}">-->
-            <!--<p>Sesión activa: <strong th:text="${sessionId}"></strong></p>-->
-            <input type="hidden" th:value="${sessionId}">
+        <!--<p>Sesión activa: <strong th:text="${sessionId}"></strong></p>-->
+        <input type="hidden" th:value="${sessionId}">
         <!--</div>-->
-<!--        <div th:if="${sessionId == null}">
-            <p>Sesión no iniciada</p>
-        </div>-->
+        <!--        <div th:if="${sessionId == null}">
+                    <p>Sesión no iniciada</p>
+                </div>-->
+        <div id="alertaCustom" class="alerta-custom"></div>
 
         <h1>🎥 Cartelera de Películas Populares</h1>
 
@@ -163,9 +188,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                     <div class="boton" th:if="${sessionId != null}">
 
-                        <button id="btnCorazon" class="btnCorazon" th:attr="data-id=${pelicula.id}">
-                            <span><i class="bi bi-heart-fill iconoCorazonLleno" style="display:none;"></i></span>
-                            <span><i class="bi bi-heart iconoCorazonVacio"></i></span>
+                        <button class="btnCorazon" th:attr="data-id=${pelicula.id}" th:classappend="${peliculasFavoritas.contains(pelicula.id)} ? ' favorito' : ''">
+
+                            <span class="iconoCorazonLleno" th:style="${peliculasFavoritas.contains(pelicula.id)} ? '' : 'display: none;'">
+                                <i class="bi bi-heart-fill"></i>
+                            </span>
+
+                            <span class="iconoCorazonVacio" th:style="${peliculasFavoritas.contains(pelicula.id)} ? 'display: none;' : ''">
+                                <i class="bi bi-heart"></i>
+                            </span>
+
                         </button>
                     </div>
                     <a th:href="@{/movie/detalle(movieId=${pelicula.id})}" >
@@ -207,8 +239,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     const boton = $(this);
                     const mediaId = $(this).data("id");
 
-                    boton.find('.iconoCorazonLleno').hide();
-                    boton.find('.iconoCorazonVacio').show();
+                    if (boton.hasClass('favorito')) {
+                        boton.find('.iconoCorazonVacio').hide();
+                        boton.find('.iconoCorazonLleno').show();
+
+                    } else {
+                        boton.find('.iconoCorazonLleno').hide();
+                        boton.find('.iconoCorazonVacio').show();
+                    }
 
                     boton.click(function () {
                         boton.find('.iconoCorazonLleno').toggle();
@@ -221,9 +259,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             data: {mediaId: mediaId, favorite: favorite},
                             success: function (response) {
                                 if (favorite) {
-                                    alert("Película marcada como favorita");
+                                    mostrarAlerta("Película marcada como favorita");
                                 } else {
-                                    alert("Película desmarcada como favorita");
+                                    mostrarAlerta("Película desmarcada como favorita", "error");
                                 }
                             },
                             error: function (xhr) {
@@ -239,6 +277,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             });
 
+            function mostrarAlerta(mensaje, tipo = "success") {
+                const alerta = $('#alertaCustom');
+                alerta.removeClass('error').removeClass('success');
+
+                if (tipo === 'error') {
+                    alerta.addClass('error');
+                }
+
+                alerta.text(mensaje);
+                alerta.addClass('show');
+
+                setTimeout(() => {
+                    alerta.removeClass('show');
+                }, 2500);
+            }
         </script>
     </body>
 </html>
