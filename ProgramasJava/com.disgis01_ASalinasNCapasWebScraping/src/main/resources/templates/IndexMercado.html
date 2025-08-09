@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos Mercado Libre</title>
+</head>
+<body>
+    <h1>Resultados de Mercado Libre</h1>
+
+    <form th:action="@{/api/seccion/scrape}" method="post">
+        <input type="text" name="busqueda" placeholder="Buscar producto..." required />
+        <button type="submit">Buscar</button>
+    </form>
+
+    <div th:if="${mensaje}">
+        <p th:text="${mensaje}"></p>
+    </div>
+
+   <table border="1" th:if="${productos != null and !productos.isEmpty()}">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>URL</th>
+            <th>Imagen</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="item : ${productos}">
+            <td th:text="${item.titulo}">Título</td>
+            <td th:text="${item.descripcion}">Descripción</td>
+            <td th:text="${item.precio}">Precio</td>
+            <td th:text="${item.url}">Precio</td>
+            <td>
+                <img th:src="${item.imagen}" alt="Imagen" width="100" height="100" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+    <div th:if="${productos != null and #lists.isEmpty(productos)}">
+        <p>No hay resultados disponibles.</p>
+    </div>
+</body>
+</html>
