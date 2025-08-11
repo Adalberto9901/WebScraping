@@ -32,53 +32,49 @@ public class ScraperService {
     }
 
     public List<Extraer> buscarPorPalabra(String q) {
-//        extraerRepository.deleteAll();
+        extraerRepository.deleteAll();
         return extraerRepository.findByTituloContainingIgnoreCase(q);
     }
 
-    public List<Element> scrape(String busqueda) throws IOException {
+    public List<Extraer> scrape(String busqueda) throws IOException {
         extraerRepository.deleteAll();
         String url = "https://listado.mercadolibre.com.mx/" + busqueda.replace(" ", "-");
-//        String url = "https://listado.mercadolibre.com.mx/" + busqueda;
         Document doc = Jsoup.connect(url).get();
 
-//        List<Element> elements = doc.getElementsByClass("poly-card");
-        List<Element> elementsGeneral = doc.getElementsByClass("ui-search-layout"); //general
-//        List<Element> elements = doc.getElementsByClass("ui-search-result__wrapper"); // contiene todo el bloque de informacion
-//        List<Element> elements = doc.getElementsByClass("poly-component__price"); // div que contiene el precio
-//        List<Element> elements = doc.getElementsByClass("poly-card__portada"); // div que contiene la imagen "img" srcclass="poly-component__picture poly-component__picture--contain"
-//        List<Element> elements = doc.getElementsByClass("poly-component__title-wrapper"); // titulo con h3
+        List<Extraer> productosGuardados = new ArrayList<>();
+        Elements productos = doc.getElementsByClass("ui-search-layout__item");
 
-        for (Element elementCompleto : elementsGeneral) {
-//            System.out.println(elementCompleto);
-            
-                    List<Element> elementsCajas = doc.getElementsByClass("ui-search-layout__item");//por cada elemento caja
-                    for (Element elementCaja : elementsCajas) {
-                        System.out.println(elementCaja);
+        for (Element producto : productos) {
+            try {
+                Element tituloLink = producto.selectFirst("h3.poly-component__title-wrapper > a.poly-component__title");
+                String titulo = tituloLink != null ? tituloLink.text() : "";
+                String productoUrl = tituloLink != null ? tituloLink.absUrl("href") : "";
+
+                Element descripcionElement = producto.selectFirst(".poly-component__brand");
+                String descripcion = descripcionElement != null ? descripcionElement.text() : ""; 
+
+                Element precioElement = producto.selectFirst(".andes-money-amount__fraction");
+                String precio = precioElement != null ? precioElement.text() : "";
+
+                Element imagenElement = producto.selectFirst("img");
+                String imagen = imagenElement != null ? imagenElement.attr("data-src") : "";
+
+                Extraer extraer = new Extraer();
+                extraer.setTitulo(titulo);
+                extraer.setDescripcion(descripcion);
+                extraer.setPrecio(precio);
+                extraer.setUrl(productoUrl);
+                extraer.setImagen(imagen);
+
+                extraerRepository.save(extraer);
+                productosGuardados.add(extraer);
+
+            } catch (Exception e) {
+                System.out.println("Error al procesar un producto: " + e.getMessage());
             }
         }
 
-//        List<Extraer> resultados = doc.select("div.poly-card poly-card--list poly-card--large poly-card--CORE")
-//                .stream()
-//                .limit(20)
-//                .map(element -> {
-//                    String titulo = element.text().replaceAll("[^\\p{L}\\p{N}\\s]", "").trim();
-//                    String descripcion = element.text().replaceAll(".andes-money-amount__fraction", "").trim();
-//                    String precio = element.text().replaceAll(".andes-money-amount__fraction", "").trim();
-//                    String link = element.absUrl("href");
-//                    String imagen = element.absUrl(".poly-component__picture");
-////                    String titulo = productElement.select(".ui-search-item__title").text();
-////                    String precio = productElement.select(".andes-money-amount__fraction").text();
-////                    String link = productElement.select(".ui-search-link").attr("href");
-//                    return new Extraer(null, titulo, descripcion, precio, link, imagen);
-//                })
-//                .filter(s -> s.getTitulo() != null && !s.getTitulo().isBlank())
-//                .filter(s -> s.getUrl() != null && !s.getUrl().isBlank())
-//                .filter(s -> !extraerRepository.existsByUrl(s.getUrl()))
-//                .collect(Collectors.toList());
-//
-//        return extraerRepository.saveAll(resultados);
-        return elementsGeneral;
+        return productosGuardados;
     }
 
     public Estadistica obtenerEstadisticas() {

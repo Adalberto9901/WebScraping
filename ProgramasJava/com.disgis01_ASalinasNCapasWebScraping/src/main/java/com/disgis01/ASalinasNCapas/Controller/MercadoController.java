@@ -46,7 +46,7 @@ public class MercadoController {
         
      @PostMapping("/seccion/scrape")
     public String scrape(@RequestParam String busqueda, Model model) throws IOException {
-        List<Element> productos = scraperService.scrape(busqueda);
+        List<Extraer> productos = scraperService.scrape(busqueda);
         model.addAttribute("productos", productos);
         return "redirect:/api/seccion";
 }

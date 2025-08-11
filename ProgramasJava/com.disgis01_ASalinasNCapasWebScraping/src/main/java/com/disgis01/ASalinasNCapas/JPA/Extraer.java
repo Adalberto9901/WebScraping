@@ -103,13 +103,7 @@ public class Extraer {
         this.titulo = titulo;
         this.url = url;
     }
-    
-//    public Extraer(Long id,String titulo, String descripcion, String precio) {
-//        this.id =id;
-//        this.titulo = titulo;
-//        this.descripcion = descripcion;
-//        this.precio = precio;
-//    }
+ 
     
     public Extraer(Long id,String titulo, String precio, String url) {
         this.id =id;

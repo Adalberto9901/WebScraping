@@ -56,6 +56,10 @@ public class Estadistica {
     public void setMinLongitud(int minLongitud) {
         this.minLongitud = minLongitud;
     }
+
+    public short getMaximo() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
     
 }

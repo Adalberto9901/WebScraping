@@ -77,7 +77,7 @@ public class SessionServicie {
        return extraerRepository.findByTituloContainingIgnoreCase(q);
     }
     
-    public List<Extraer> scrape(String busqueda) throws IOException {
+    public List<Extraer> scrape2(String busqueda) throws IOException {
         extraerRepository.deleteAll();
         String url = "https://listado.mercadolibre.com.mx/" + busqueda.replace(" ", "-");
         Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
@@ -106,4 +106,46 @@ public class SessionServicie {
  
         return new Estadistica(lista.size(), stats.getAverage(), stats.getMax(), stats.getMin());
     }
+        //**********
+        
+        public List<Element> scrape(String busqueda) throws IOException {
+        extraerRepository.deleteAll();
+        String url = "https://listado.mercadolibre.com.mx/" + busqueda.replace(" ", "-");
+        Document doc = Jsoup.connect(url).get();
+
+        List<Element> elementsGeneral = doc.getElementsByClass("ui-search-layout"); 
+
+        for (Element elementCompleto : elementsGeneral) {
+            
+                    List<Element> elementsCajas = doc.getElementsByClass("poly-component__title");//por cada elemento caja
+                    for (Element elementCaja : elementsCajas) {
+                        System.out.println("======== Seccion Url, Desc=========");
+                        System.out.println(elementCaja);
+            }
+                    List<Element> elementsPrecios = doc.getElementsByClass("andes-money-amount__fraction");//por cada elemento caja
+                    for (Element elementPrecio : elementsPrecios) {
+                        System.out.println("======== Seccion Precios=========");
+                        System.out.println(elementPrecio);
+            }
+                    List<Element> elementsInfos = doc.getElementsByClass("ui-search-result__wrapper");//por info
+                    for (Element elementInfo : elementsInfos) {
+                        System.out.println("======== Seccion Informaciones=========");
+                        System.out.println(elementInfo);
+                        
+            }
+                    List<Element> elementsImgs = doc.getElementsByClass("poly-component__picture");//por imagen
+                    for (Element elementImg : elementsImgs) {
+                        System.out.println("======== Seccion Img=========");
+                        System.out.println(elementImg);
+            }
+                    List<Element> productTitles = doc.getElementsByClass("poly-component__brand");
+                for (Element title : productTitles) {
+                        System.out.println("======== Seccion Titulo=========");
+                    System.out.println(title);
+                }
+        }
+
+        return elementsGeneral;
+    }
+
 }
